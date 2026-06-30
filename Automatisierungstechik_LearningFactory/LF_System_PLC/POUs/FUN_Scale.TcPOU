@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FUN_Scale" Id="{44f48920-fa01-4344-bf7b-5c55ad611afa}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FUN_Scale : REAL
+VAR_INPUT
+	ix :UINT;
+	ix_max :REAL;
+	ix_min :REAL;
+	ry_min :REAL;
+	ry_max :REAL;
+END_VAR
+VAR
+	rk :REAL :=0.0854492188; //für Dispenser Ultraschallsensor 
+	rd :REAL :=0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//FUN keine deklarierung im Hauptprogramm
+
+rk:=(ry_max-ry_min)/(ix_max-ix_min);
+rd:=ry_min-rk*ix_min;
+
+FUN_Scale := rk*ix+rd;
+
+IF FUN_Scale > ry_max THEN
+	FUN_Scale:=ry_max;
+ELSIF FUN_Scale < ry_min THEN
+	FUN_Scale:=ry_min;
+END_IF
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_Scale">
+      <LineId Id="15" Count="0" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="29" Count="1" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

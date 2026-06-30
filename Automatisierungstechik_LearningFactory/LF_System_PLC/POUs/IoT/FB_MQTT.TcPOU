@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_MQTT" Id="{d33d54a5-c78d-4ff4-b364-08b1ada18458}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MQTT
+VAR
+    fbMqttClient: FB_IotMqttClient; // MQTT client with initialization
+    sTopicToPublish: STRING(255) := '$$groupsname: Die3Muskebiere'; // MQTT topic for temperature
+	sMessageToPublish: STRING(255); // Message buffer
+    tmrSendMessageInterval: TON := (PT := T#10S); // Interval timer for publishing
+	nstate :int :=0;
+END_VAR
+VAR_INPUT
+	data :BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+
+CASE nstate OF 
+	0:
+		fbMqttClient.sHostName := '158.180.44.197';
+		fbMqttClient.nHostPort := 1883;
+		fbMqttClient.sTopicPrefix := 'aut/Die3Muskebiere';
+		fbMqttClient.sClientId := 'Publishing PLC';
+		fbMqttClient.sUserName := 'bobm';
+		fbMqttClient.sUserPassword := 'letmein';
+		fbMqttClient.Execute(bConnect := TRUE);
+		IF fbMqttClient.bConnected THEN
+			nstate :=1;
+		END_IF
+	
+	1: 
+		sMessageToPublish :='Die3Muskebiere';	
+		fbMqttClient.Publish(
+			sTopic := '/$$groupsname',
+			pPayload := ADR('Die3Muskebiere'),
+			nPayloadSize := LEN(sMessageToPublish) + 1,
+			eQoS := TcIotMqttQos.AtMostOnceDelivery,
+			bRetain := TRUE,
+			bQueue := FALSE
+		);
+		nstate :=2;
+	2:
+		sMessageToPublish :='Oberhofer-Schrott-Hofer';	
+		fbMqttClient.Publish(
+			sTopic := '/name',
+			pPayload := ADR(sMessageToPublish),
+			nPayloadSize := LEN(sMessageToPublish) + 1,
+			eQoS := TcIotMqttQos.AtMostOnceDelivery,
+			bRetain := TRUE,
+			bQueue := FALSE
+		);
+		nstate:=3;
+	3:
+		tmrSendMessageInterval(IN :=TRUE);
+		IF tmrSendMessageInterval.Q THEN
+			tmrSendMessageInterval(IN := FALSE);
+			sMessageToPublish := BOOL_TO_STRING(data);
+	
+			fbMqttClient.Publish(
+				sTopic := '/bEnable',
+				pPayload := ADR(sMessageToPublish),
+				nPayloadSize := LEN(sMessageToPublish) + 1,
+				eQoS := TcIotMqttQos.AtMostOnceDelivery,
+				bRetain := TRUE,
+				bQueue := FALSE
+			);
+			fbMqttClient.Publish(
+				sTopic := '/bEnable/$$unit',
+				pPayload := ADR('bool'),
+				nPayloadSize := LEN(sMessageToPublish) + 1,
+				eQoS := TcIotMqttQos.AtMostOnceDelivery,
+				bRetain := TRUE,
+				bQueue := FALSE
+			);
+		END_IF
+	
+	
+END_CASE
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_MQTT">
+      <LineId Id="26" Count="4" />
+      <LineId Id="116" Count="5" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="31" Count="16" />
+      <LineId Id="49" Count="34" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

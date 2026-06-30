@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Roboter_E" Id="{4af811a2-b766-4668-b73b-cadf1a937bf2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Roboter_E
+VAR_INPUT
+	bRefMax_in :BOOL;
+	bRefMin_in :BOOL;
+	
+END_VAR
+VAR_OUTPUT
+	bRefMax_out :BOOL;
+	bRefMin_out :BOOL;
+	
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bRefMax_out :=  NOT bRefMax_in;
+bRefMin_out := NOT bRefMin_in;
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Roboter_E">
+      <LineId Id="9" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

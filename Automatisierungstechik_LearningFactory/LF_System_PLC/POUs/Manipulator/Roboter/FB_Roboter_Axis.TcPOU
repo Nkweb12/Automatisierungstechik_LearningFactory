@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Roboter_Axis" Id="{bb71503e-a414-410e-8892-e81fc9490a92}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Roboter_Axis
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+	rPosition :REAL;
+	bRefSens :BOOL;
+END_VAR
+VAR_OUTPUT
+	eState :eBetriebszustand;
+END_VAR
+VAR
+	nState:INT :=0;
+	mc_Reset :MC_Reset;
+	mc_MoveAbsolute :MC_MoveAbsolute;
+	mc_Home :MC_Home;
+	mc_Power :MC_Power;
+	mc_HomingMode1: MC_HomingMode;
+	
+END_VAR
+VAR_IN_OUT
+	ax :AXIS_REF;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ax.ReadStatus();
+
+
+mc_Home(
+	Axis:= ax, 
+	Execute:= , 
+	Position:= 0, 
+	HomingMode:= mc_HomingMode1, 
+	BufferMode:= , 
+	Options:= , 
+	bCalibrationCam:= bRefSens, 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+mc_MoveAbsolute(
+	Axis:= ax, 
+	Execute:= , 
+	Position:= , 
+	Velocity:= 30, 
+	Acceleration:= 30, 
+	Deceleration:= 30, 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+
+mc_Power(
+	Axis:= ax, 
+	Enable:= , 
+	Enable_Positive:= , 
+	Enable_Negative:= , 
+	Override:= , 
+	BufferMode:= , 
+	Options:= , 
+	Status=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+mc_Reset(
+	Axis:= ax, 
+	Execute:= , 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+
+IF NOT bEnable THEN
+	nState :=0;
+END_IF
+
+CASE nState OF 
+	0:
+	eState:=eBetriebszustand.Off;
+	mc_Power.Enable :=TRUE;
+	mc_Power.Enable_Positive := TRUE;  
+	mc_Power.Enable_Negative := TRUE;
+
+	
+	
+	IF bEnable AND NOT mc_power.Status THEN
+		nState :=10;
+	ELSIF mc_power.Status AND bEnable THEN
+		nState:=12;
+	END_IF
+	
+	10: // init Reset
+	eState:=eBetriebszustand.Init;
+	mc_Reset.Execute:=TRUE;
+	
+	IF mc_Reset.Done THEN
+		nState:=11;
+		mc_Reset.Execute:=FALSE;
+	END_IF
+	
+	11: // init Power
+	eState:=eBetriebszustand.Init;
+	
+	mc_Power.Enable :=TRUE;	
+	
+	IF mc_Power.Status THEN
+		nState:=12;
+	END_IF
+	
+	12://Homed?
+	eState:=eBetriebszustand.Init;
+	
+	IF ax.Status.Homed THEN
+		nstate:=20;
+	ELSE
+		nstate:=13;
+	END_IF
+	
+	13://Homing
+	eState:=eBetriebszustand.Init;
+	
+	mc_Home.Execute :=TRUE;
+	
+	IF mc_Home.Done THEN
+		mc_Home.Execute :=FALSE;
+		nstate:= 20;
+	END_IF
+	
+	
+	20: // Ready
+	eState:= eBetriebszustand.Ready;
+	
+	IF bExecute THEN 
+		nState:=30;
+	END_IF
+ 
+	30: // Bewegung
+	eState:=eBetriebszustand.Production;
+	mc_MoveAbsolute.Position := rPosition;
+	mc_MoveAbsolute.Execute :=TRUE;
+	
+	IF mc_MoveAbsolute.Done THEN 
+		mc_MoveAbsolute.Execute:=FALSE;
+		nState :=40;
+	END_IF
+	
+	40: // Fertig
+	eState :=eBetriebszustand.Done;
+	
+	IF NOT bExecute THEN 
+		nState:=20;
+	END_IF
+
+END_CASE	
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Roboter_Axis">
+      <LineId Id="95" Count="0" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="22" Count="12" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="36" Count="14" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="53" Count="11" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="66" Count="5" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="230" Count="2" />
+      <LineId Id="229" Count="0" />
+      <LineId Id="99" Count="4" />
+      <LineId Id="205" Count="1" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="105" Count="10" />
+      <LineId Id="117" Count="2" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="120" Count="5" />
+      <LineId Id="128" Count="3" />
+      <LineId Id="156" Count="5" />
+      <LineId Id="163" Count="1" />
+      <LineId Id="162" Count="0" />
+      <LineId Id="165" Count="1" />
+      <LineId Id="168" Count="5" />
+      <LineId Id="175" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="132" Count="9" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="142" Count="13" />
+      <LineId Id="93" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

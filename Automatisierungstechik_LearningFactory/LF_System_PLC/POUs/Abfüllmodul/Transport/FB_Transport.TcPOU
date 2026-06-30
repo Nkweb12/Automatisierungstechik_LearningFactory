@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Transport" Id="{326665c8-b6b7-4475-a44b-2dee740fc7ea}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Transport
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+	nStation :INT := 1;
+	//Hardweare Eingänge
+	bSens1 :BOOL;
+	bSens2 :BOOL;
+	bSens3 :BOOL;
+	bSens4 :BOOL;
+END_VAR
+VAR_OUTPUT
+	eState :eBetriebszustand;
+	bStopper1 :BOOL;
+	bStopper2 :BOOL;
+	bStopper3 :BOOL;
+END_VAR
+VAR
+	fb_TransportE :FB_Transport_E;
+	fb_TransportLogik :FB_Transport_Logik;
+	fb_TransportBand :FB_Foerderband;
+	fb_TransportA :FB_Transport_A;
+END_VAR
+VAR_IN_OUT
+	//Achsen Ref
+	ax : AXIS_REF;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//nur Eingänge werden beschreiben
+fb_TransportE(
+	bSens1:= bSens1, 
+	bSens2:= bSens2, 
+	bSens3:= bSens3, 
+	bSens4:= bSens4, 
+	bStation1=> , 
+	bStation2=> , 
+	bStation3=> , 
+	bStation4=> );
+	
+fb_TransportLogik(
+	bEnable:= bEnable, 
+	bExecute:= bExecute, 
+	eStateE:= fb_TransportBand.eState, 
+	nStation:= nStation, 
+	bStation1:= fb_TransportE.bStation1, 
+	bStation2:= fb_TransportE.bStation2, 
+	bStation3:= fb_TransportE.bStation3, 
+	bStation4:= fb_TransportE.bStation4,
+	bEnableA=> , 
+	bExecuteA=> , 
+	bStopA=> , 
+	eStateA=> eState, 
+	bStop1=> , 
+	bStop2=> , 
+	bStop3=> );
+	
+	
+fb_TransportBand(
+	bEnable:= fb_TransportLogik.bEnableA, 
+	bExecute:= fb_TransportLogik.bExecuteA, 
+	bHalt:= fb_TransportLogik.bStopA, 
+	eState=> , 
+	ax:= ax);
+	
+	
+fb_TransportA(
+	bStop1:= fb_TransportLogik.bStop1, 
+	bStop2:= fb_TransportLogik.bStop2, 
+	bStop3:= fb_TransportLogik.bStop3, 
+	bStopper1=> bStopper1, 
+	bStopper2=> bStopper2, 
+	bStopper3=> bStopper3);]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Transport">
+      <LineId Id="74" Count="0" />
+      <LineId Id="33" Count="7" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="43" Count="7" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="51" Count="5" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="57" Count="1" />
+      <LineId Id="60" Count="4" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="65" Count="1" />
+      <LineId Id="68" Count="5" />
+      <LineId Id="67" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

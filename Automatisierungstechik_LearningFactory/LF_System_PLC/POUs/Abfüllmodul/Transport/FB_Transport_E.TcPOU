@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Transport_E" Id="{33754491-3b8e-48fa-8d65-817ba14d4b90}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Transport_E
+VAR_INPUT
+	//Hardware Singale
+	bSens1 :BOOL;
+	bSens2 :BOOL;
+	bSens3 :BOOL;
+	bSens4 :BOOL;
+END_VAR
+VAR_OUTPUT
+	bStation1 :BOOL;
+	bStation2 :BOOL;
+	bStation3 :BOOL;
+	bStation4 :BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bStation1 :=bSens1;
+bStation2 :=bSens2;
+bStation3 :=bSens3;
+bStation4 :=bSens4;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Transport_E">
+      <LineId Id="9" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

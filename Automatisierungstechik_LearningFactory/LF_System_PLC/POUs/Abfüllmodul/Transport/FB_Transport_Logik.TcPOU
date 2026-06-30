@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Transport_Logik" Id="{b8205a6f-84ef-42f8-ac7d-0a3b21b8ed78}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Transport_Logik
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+	eStateE :eBetriebszustand;
+	nStation :INT;
+	//Logik -> Hardware Signale
+	bStation1 :BOOL;
+	bStation2 :BOOL;
+	bStation3 :BOOL;
+	bStation4 :BOOL;
+END_VAR
+VAR_OUTPUT
+	bEnableA :BOOL;
+	bExecuteA :BOOL;
+	bStopA :BOOL;
+	eStateA :eBetriebszustand;
+	
+	//Hardware Singale ->Logik
+	bStop1 :BOOL;
+	bStop2 :BOOL;
+	bStop3 :BOOL;
+END_VAR
+VAR
+	nState :INT;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF NOT bEnable THEN
+	nState :=0;
+END_IF
+
+CASE nState OF 
+	0: //off
+	eStateA:= eBetriebszustand.Off;
+	bEnableA :=FALSE;
+	bExecuteA :=FALSE;
+	bStopA :=FALSE;
+	bStop1 :=FALSE;
+	bStop2 :=FALSE;
+	bStop3 :=FALSE;
+	
+	IF bEnable THEN 
+		nState :=1;
+	END_IF
+
+	1: //init
+	eStateA:=eBetriebszustand.Init;
+	bEnableA :=TRUE;
+	bExecuteA :=FALSE;
+	bStopA :=FALSE;
+	bStop1 :=FALSE;
+	bStop2 :=FALSE;
+	bStop3 :=FALSE;
+	
+	IF eStateE = eBetriebszustand.Ready THEN
+		nState :=2;
+	END_IF
+	
+	2: //Ready
+	eStateA:=eBetriebszustand.Ready;
+	bEnableA :=TRUE;
+	bExecuteA :=FALSE;
+	bStopA :=FALSE;
+	bStop1 :=FALSE;
+	bStop2 :=FALSE;
+	bStop3 :=FALSE;
+	
+	IF bExecute THEN
+		nState :=3;
+	END_IF
+	
+	3: //Förderband Start
+	eStateA:=eBetriebszustand.Production;
+	bExecuteA :=TRUE;
+	
+	IF (nStation-1) = 1 THEN
+		bStop1 :=TRUE;
+	ELSIF (nStation-1) = 2 THEN
+		bStop2 :=TRUE;		
+	ELSIF (nStation-1) = 3 THEN
+		bStop3 :=TRUE;		
+	END_IF
+	
+	IF (bStation1 AND (nStation =1)) OR (bStation2 AND (nStation =2)) OR (bStation3 AND (nStation =3)) OR (bStation4 AND (nStation =4))THEN
+		nState :=4;
+	END_IF
+	
+	4: //Förderband stop
+	eStateA:=eBetriebszustand.Production;
+	bExecuteA := FALSE;
+	bStopA := TRUE;
+	bStop1 :=FALSE;
+	bStop2 :=FALSE;
+	bStop3 :=FALSE;
+	
+	IF eStateE = eBetriebszustand.Done THEN
+		nState :=5;
+	END_IF
+	
+	5: //Done
+	eStateA:=eBetriebszustand.Done;
+	
+	IF NOT bExecute THEN
+		nState :=2;
+	END_IF
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Transport_Logik">
+      <LineId Id="139" Count="0" />
+      <LineId Id="141" Count="1" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="36" Count="1" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="41" Count="3" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="51" Count="3" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="55" Count="5" />
+      <LineId Id="62" Count="5" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="68" Count="10" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="86" Count="8" />
+      <LineId Id="96" Count="1" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="98" Count="3" />
+      <LineId Id="103" Count="2" />
+      <LineId Id="107" Count="1" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="33" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

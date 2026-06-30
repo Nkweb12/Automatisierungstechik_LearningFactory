@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Abfuellmodul" Id="{d10e0fd5-5d28-4b1a-a8ea-ff9fa2ca8ec6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Abfuellmodul
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+END_VAR
+VAR_OUTPUT
+	eState :eBetriebszustand;
+END_VAR
+VAR
+	fb_Vereinzelung :FB_Vereinzelung;
+	fb_Transport : FB_Transport;
+	fb_Dispenser1 :FB_Dispenser;
+	fb_Dispenser2 :FB_Dispenser;
+	fb_Dispenser3 :FB_Dispenser;
+	fb_EZylinder1 : FB_EZylinder;
+	fb_EZylinder2 : FB_EZylinder;
+
+	
+	nState :INT;
+	nStation :INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fb_Vereinzelung(
+	bEnable:= , 
+	bExecute:= , 
+	bSens1:= IFC_HW.bEinzelSens1, 
+	bSens2:= IFC_HW.bEinzelSens2, 
+	bSens3:= IFC_HW.bEinzelSens3, 
+	bSens4:= IFC_HW.bBandSens1, 
+	eState=> , 
+	bGate1=> fb_EZylinder1.bGate, 
+	bGate2=> fb_EZylinder2.bGate);
+	
+fb_Transport(
+	bEnable:= , 
+	bExecute:= , 
+	nStation:= nStation, 
+	bSens1:= IFC_HW.bBandSens1, 
+	bSens2:= IFC_HW.bBandSens2, 
+	bSens3:= IFC_HW.bBandSens3, 
+	bSens4:= IFC_HW.bBandSens4, 
+	eState=> , 
+	bStopper1=> IFC_HW.bBandHub1, 
+	bStopper2=> IFC_HW.bBandHub2, 
+	bStopper3=> IFC_HW.bBandHub3, 
+	ax:= IFC_HW.ax_BandMotor);
+	
+fb_Dispenser1(
+	bEnable:= , 
+	bExecute:= , 
+	rDistance:= 60, 
+	eState=> , 
+	ax:= IFC_HW.ax_Extruder1);
+fb_Dispenser2(
+	bEnable:= , 
+	bExecute:= , 
+	rDistance:= 60, 
+	eState=> , 
+	ax:= IFC_HW.ax_Extruder2);
+fb_Dispenser3(
+	bEnable:= , 
+	bExecute:= , 
+	rDistance:= 60, 
+	eState=> , 
+	ax:= IFC_HW.ax_Extruder3);
+	
+fb_EZylinder1(bGate:= , bError:= , bR1=> IFC_HW.bR1AKT1, bR2=> IFC_HW.bR2AKT1);
+fb_EZylinder2(bGate:= , bError:= , bR1=> IFC_HW.bR1AKT2, bR2=> IFC_HW.bR2AKT2);
+
+
+IF NOT bEnable THEN 
+	nState :=0;
+END_IF
+
+
+CASE nState OF
+	0: // Off
+	eState := eBetriebszustand.Off;
+	
+	fb_Vereinzelung.bEnable:=FALSE;
+	fb_Transport.bEnable :=FALSE;
+	fb_Dispenser1.bEnable :=FALSE;
+	fb_Dispenser2.bEnable :=FALSE;
+	fb_Dispenser3.bEnable :=FALSE;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF bEnable THEN
+		nstate :=10;
+	END_IF
+	
+	10:// Init
+	eState := eBetriebszustand.Init;
+	
+	fb_Vereinzelung.bEnable:=TRUE;
+	fb_Transport.bEnable :=TRUE;
+	fb_Dispenser1.bEnable :=TRUE;
+	fb_Dispenser2.bEnable :=TRUE;
+	fb_Dispenser3.bEnable :=TRUE;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF (fb_Vereinzelung.eState = eBetriebszustand.Ready) AND (fb_Transport.eState = eBetriebszustand.Ready) AND (fb_Dispenser1.eState = eBetriebszustand.Ready) AND (fb_Dispenser2.eState = eBetriebszustand.Ready) AND (fb_Dispenser3.eState = eBetriebszustand.Ready)THEN
+		nstate :=20;
+	END_IF
+	
+	20:// Ready
+	eState := eBetriebszustand.Ready;
+	
+	fb_Vereinzelung.bEnable:=TRUE;
+	fb_Transport.bEnable :=TRUE;
+	fb_Dispenser1.bEnable :=TRUE;
+	fb_Dispenser2.bEnable :=TRUE;
+	fb_Dispenser3.bEnable :=TRUE;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF bExecute THEN
+		nState:=30;
+	END_IF
+	
+	30:// Start
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=TRUE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	nStation :=1;
+	
+	IF (fb_Vereinzelung.eState = eBetriebszustand.Done) AND (fb_Transport.eState = eBetriebszustand.Done) THEN
+		nstate :=31;
+	END_IF
+	
+	31:// Dispenser1
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=TRUE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	nStation :=1;
+	
+	IF fb_Dispenser1.eState = eBetriebszustand.Done THEN
+		nState :=32;
+	END_IF
+	
+	32:// Bewegung zu Dispenser2
+	eState := eBetriebszustand.Production;
+	
+	nStation :=2;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF fb_Transport.eState = eBetriebszustand.Done THEN
+		nState :=33;
+	END_IF
+	
+	33:// Dispenser2
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=TRUE;
+	fb_Dispenser3.bExecute :=FALSE;
+	nStation :=2;
+	
+	IF fb_Dispenser2.eState = eBetriebszustand.Done THEN
+		nState :=34;
+	END_IF
+		
+	34:// Bewegung zu Dispenser3
+	eState := eBetriebszustand.Production;
+	
+	nStation :=3;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF fb_Transport.eState = eBetriebszustand.Done THEN
+		nState :=35;
+	END_IF
+	
+	35:// Dispenser3
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=TRUE;
+	nStation :=3;
+	
+	IF fb_Dispenser3.eState = eBetriebszustand.Done THEN
+		nState :=36;
+	END_IF
+	
+	36:// Abholstation
+	eState := eBetriebszustand.Production;
+	
+	nStation :=4;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+		
+	IF fb_Transport.eState = eBetriebszustand.Done THEN
+		nState :=40;
+	END_IF 
+	
+	40:// Done
+	eState := eBetriebszustand.Done;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF not bExecute THEN
+		nState :=20;
+	END_IF
+	
+	
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Abfuellmodul">
+      <LineId Id="270" Count="8" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="281" Count="11" />
+      <LineId Id="239" Count="0" />
+      <LineId Id="293" Count="0" />
+      <LineId Id="253" Count="4" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="259" Count="4" />
+      <LineId Id="258" Count="0" />
+      <LineId Id="265" Count="4" />
+      <LineId Id="264" Count="0" />
+      <LineId Id="314" Count="0" />
+      <LineId Id="316" Count="0" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="319" Count="0" />
+      <LineId Id="318" Count="0" />
+      <LineId Id="343" Count="1" />
+      <LineId Id="227" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="24" Count="2" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="69" Count="3" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="32" Count="3" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="38" Count="6" />
+      <LineId Id="49" Count="3" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="45" Count="2" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="54" Count="1" />
+      <LineId Id="57" Count="10" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="73" Count="5" />
+      <LineId Id="80" Count="1" />
+      <LineId Id="87" Count="4" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="96" Count="1" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="100" Count="2" />
+      <LineId Id="108" Count="8" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="117" Count="4" />
+      <LineId Id="123" Count="3" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="127" Count="4" />
+      <LineId Id="133" Count="2" />
+      <LineId Id="141" Count="8" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="152" Count="12" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="166" Count="11" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="180" Count="2" />
+      <LineId Id="188" Count="1" />
+      <LineId Id="317" Count="0" />
+      <LineId Id="185" Count="2" />
+      <LineId Id="183" Count="0" />
+      <LineId Id="192" Count="2" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="195" Count="2" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="199" Count="3" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="204" Count="3" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="151" Count="0" />
+      <LineId Id="23" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

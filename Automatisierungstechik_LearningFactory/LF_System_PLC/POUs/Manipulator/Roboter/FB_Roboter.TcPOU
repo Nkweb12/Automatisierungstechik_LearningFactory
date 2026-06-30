@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Roboter" Id="{98968849-8f50-4fb2-866e-dc1c8bbe7081}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Roboter
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+	//istorageplace :INT;
+	//istation :INT;
+	
+	pPositionX :REAL;
+	pPositionY :REAL;
+	pPositionZ :REAL;
+END_VAR
+VAR_OUTPUT
+	//bGripperClosed :BOOL;
+	eState :eBetriebszustand;
+END_VAR
+VAR
+	fb_Roboter_E_X: FB_Roboter_E;
+	fb_Roboter_E_Y: FB_Roboter_E;
+	fb_Roboter_E_Z: FB_Roboter_E;
+	fb_Roboter_Logik :FB_Roboter_Logik;
+	//fb_Roboter_Gripper : FB_Roboter_Axis;
+	//gripper hilfsvarible 
+	//hilfsvariable abstellposition
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fb_Roboter_E_X(bRefMax_in:= IFC_HW.bManEndXmax, bRefMin_in:= IFC_HW.bManEndXmin, bRefMax_out=> , bRefMin_out=> );
+fb_Roboter_E_Y(bRefMax_in:= IFC_HW.bManEndYmax, bRefMin_in:= IFC_HW.bManEndYmin, bRefMax_out=> , bRefMin_out=> );
+fb_Roboter_E_Z(bRefMax_in:= IFC_HW.bManEndZmax, bRefMin_in:= IFC_HW.bManEndZmin, bRefMax_out=> , bRefMin_out=> );
+
+
+fb_Roboter_Logik(
+	bEnable:= bEnable, 
+	bExecute:= bExecute, 
+	pPositionX:= pPositionX, 
+	bRefmin_X:= fb_Roboter_E_X.bRefMin_out, 
+	bRefmax_X:= fb_Roboter_E_X.bRefMax_out, 
+	pPositionY:= pPositionY, 
+	bRefmin_Y:= fb_Roboter_E_Y.bRefMin_out, 
+	bRefmax_Y:= fb_Roboter_E_Y.bRefMax_out, 
+	pPositionZ:= pPositionZ, 
+	bRefmin_Z:= fb_Roboter_E_Z.bRefMin_out, 
+	bRefmax_Z:= fb_Roboter_E_Z.bRefMax_out, 
+	bBreak=> IFc_HW.bManBrakeZ, 
+	eState=> eState);
+	
+	
+	
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Roboter">
+      <LineId Id="9" Count="0" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="70" Count="12" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="87" Count="3" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

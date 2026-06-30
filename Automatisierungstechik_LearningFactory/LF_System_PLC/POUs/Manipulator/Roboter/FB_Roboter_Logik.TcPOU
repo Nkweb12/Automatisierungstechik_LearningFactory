@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_Roboter_Logik" Id="{8ba7399c-3ab9-4824-9167-bb4531069ea3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Roboter_Logik
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+
+	pPositionX :REAL;
+	bRefmin_X :BOOL;
+	bRefmax_X :BOOL;
+	
+	pPositionY :REAL;
+	bRefmin_Y :BOOL;
+	bRefmax_Y :BOOL;
+	
+	pPositionZ :REAL;
+	bRefmin_Z :BOOL;
+	bRefmax_Z :BOOL;
+	
+	
+	
+	
+END_VAR
+VAR_OUTPUT
+	bBreak :BOOL;
+	
+	
+	eState :eBetriebszustand;
+	
+END_VAR
+VAR
+	fb_Roboter_Axis_X : FB_Roboter_Axis;
+	fb_Roboter_Axis_Y : FB_Roboter_Axis;
+	fb_Roboter_Axis_Z : FB_Roboter_Axis;
+	//fb_Roboter_Gripper : FB_Roboter_Axis;
+	
+	nState :INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//soft limits bei Achse selbst für realen Betrieb einstellen 
+
+fb_Roboter_Axis_X(
+	bEnable:= , 
+	bExecute:= , 
+	rPosition:= , 
+	bRefSens:= bRefmin_X, 
+	eState=> , 
+	ax:= IFC_HW.ax_ManX);
+fb_Roboter_Axis_Y(
+	bEnable:= , 
+	bExecute:= , 
+	rPosition:= , 
+	bRefSens:= bRefmin_Y, 
+	eState=> , 
+	ax:= IFC_HW.ax_ManY);
+fb_Roboter_Axis_Z(
+	bEnable:= , 
+	bExecute:= , 
+	rPosition:= , 
+	bRefSens:= bRefmin_Z, 
+	eState=> , 
+	ax:= IFC_HW.ax_ManZ);
+
+IF NOT bEnable THEN
+	nState :=0;
+END_IF
+
+CASE nState OF
+	0: //off
+	eState := eBetriebszustand.Off;
+	
+	IF bEnable THEN
+		nstate :=1;
+	END_IF
+	
+	1: //init
+	eState := eBetriebszustand.Init;
+	fb_Roboter_Axis_X.bEnable := TRUE;
+	fb_Roboter_Axis_Y.bEnable := TRUE;
+	fb_Roboter_Axis_Z.bEnable := TRUE;
+	
+	IF (fb_Roboter_Axis_X.eState = eBetriebszustand.Ready) AND (fb_Roboter_Axis_Y.eState = eBetriebszustand.Ready) AND (fb_Roboter_Axis_Z.eState = eBetriebszustand.Ready) THEN 
+		nstate :=2;
+	END_IF
+	
+	2: //Ready
+	eState := eBetriebszustand.Ready;
+	
+	IF bExecute THEN 
+		nstate :=21;
+	END_IF
+	
+	21: //check z hight
+	eState := eBetriebszustand.Production;
+	
+	IF IFC_HW.ax_ManZ.NcToPlc.ActPos > GVL_PosKinematic.pZoff THEN
+		nstate :=22;
+	ELSE
+		nstate :=23;
+	END_IF
+	
+	22: //Move Z to safe position
+	eState := eBetriebszustand.Production;
+	
+	fb_Roboter_Axis_Z.rPosition :=45;
+	fb_Roboter_Axis_Z.bExecute :=TRUE;
+	bBreak :=TRUE;
+	
+	IF fb_Roboter_Axis_Z.eState = eBetriebszustand.Done THEN
+		fb_Roboter_Axis_Z.bExecute :=FALSE;
+		bBreak :=FALSE;
+		nstate :=23;
+	END_IF
+	
+	23: //Move xy
+	eState := eBetriebszustand.Production;
+	
+	fb_Roboter_Axis_X.rPosition :=pPositionX;
+	fb_Roboter_Axis_X.bExecute :=TRUE;
+	fb_Roboter_Axis_Y.rPosition :=pPositionY;
+	fb_Roboter_Axis_Y.bExecute :=TRUE;
+	
+	IF (fb_Roboter_Axis_X.eState = eBetriebszustand.Done) AND (fb_Roboter_Axis_Y.eState = eBetriebszustand.Done) THEN
+		fb_Roboter_Axis_X.bExecute :=FALSE;
+		fb_Roboter_Axis_Y.bExecute :=FALSE;
+		nstate :=24;
+	END_IF
+	
+	24: //Move Z
+	eState := eBetriebszustand.Production;
+	
+	fb_Roboter_Axis_Z.rPosition :=pPositionZ;
+	fb_Roboter_Axis_Z.bExecute :=TRUE;
+	bBreak :=TRUE;
+	
+	IF fb_Roboter_Axis_Z.eState = eBetriebszustand.Done THEN
+		fb_Roboter_Axis_Z.bExecute :=FALSE;
+		bBreak :=FALSE;
+		nstate :=25;
+	END_IF
+	
+	25: //Done
+	eState := eBetriebszustand.Done;
+	
+	IF NOT bExecute THEN
+		nstate :=2;
+	END_IF
+	
+	
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Roboter_Logik">
+      <LineId Id="47" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="62" Count="5" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="69" Count="5" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="76" Count="5" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="231" Count="1" />
+      <LineId Id="49" Count="1" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="86" Count="1" />
+      <LineId Id="53" Count="4" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="82" Count="1" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="89" Count="6" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="96" Count="8" />
+      <LineId Id="106" Count="1" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="108" Count="1" />
+      <LineId Id="114" Count="1" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="116" Count="2" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="121" Count="1" />
+      <LineId Id="124" Count="2" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="135" Count="1" />
+      <LineId Id="139" Count="2" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="145" Count="1" />
+      <LineId Id="194" Count="0" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="148" Count="1" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="150" Count="3" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="52" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
