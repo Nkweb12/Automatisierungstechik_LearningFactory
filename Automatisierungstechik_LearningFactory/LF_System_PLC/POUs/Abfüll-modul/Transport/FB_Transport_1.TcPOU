@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
-  <POU Name="FB_Transport" Id="{326665c8-b6b7-4475-a44b-2dee740fc7ea}" SpecialFunc="None">
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Transport_1" Id="{1cc9fd6d-85b6-4f17-a01a-2a23737eb2b1}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Transport
 VAR_INPUT
 	bEnable :BOOL;
@@ -74,21 +74,5 @@ fb_TransportA(
 	bStopper2=> bStopper2, 
 	bStopper3=> bStopper3);]]></ST>
     </Implementation>
-    <LineIds Name="FB_Transport">
-      <LineId Id="74" Count="0" />
-      <LineId Id="33" Count="7" />
-      <LineId Id="9" Count="0" />
-      <LineId Id="41" Count="0" />
-      <LineId Id="43" Count="7" />
-      <LineId Id="127" Count="0" />
-      <LineId Id="51" Count="5" />
-      <LineId Id="42" Count="0" />
-      <LineId Id="57" Count="1" />
-      <LineId Id="60" Count="4" />
-      <LineId Id="59" Count="0" />
-      <LineId Id="65" Count="1" />
-      <LineId Id="68" Count="5" />
-      <LineId Id="67" Count="0" />
-    </LineIds>
   </POU>
 </TcPlcObject>

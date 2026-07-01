@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
-  <POU Name="FB_Transport_Logik" Id="{b8205a6f-84ef-42f8-ac7d-0a3b21b8ed78}" SpecialFunc="None">
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Transport_Logik_1" Id="{8c613b1c-93c3-4d53-af7a-7d79d506071a}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Transport_Logik
 VAR_INPUT
 	bEnable :BOOL;
@@ -111,43 +111,5 @@ CASE nState OF
 	END_IF
 END_CASE]]></ST>
     </Implementation>
-    <LineIds Name="FB_Transport_Logik">
-      <LineId Id="139" Count="0" />
-      <LineId Id="141" Count="1" />
-      <LineId Id="140" Count="0" />
-      <LineId Id="31" Count="0" />
-      <LineId Id="30" Count="0" />
-      <LineId Id="32" Count="0" />
-      <LineId Id="34" Count="0" />
-      <LineId Id="36" Count="1" />
-      <LineId Id="35" Count="0" />
-      <LineId Id="39" Count="1" />
-      <LineId Id="38" Count="0" />
-      <LineId Id="41" Count="3" />
-      <LineId Id="46" Count="0" />
-      <LineId Id="45" Count="0" />
-      <LineId Id="48" Count="0" />
-      <LineId Id="47" Count="0" />
-      <LineId Id="51" Count="3" />
-      <LineId Id="50" Count="0" />
-      <LineId Id="55" Count="5" />
-      <LineId Id="62" Count="5" />
-      <LineId Id="61" Count="0" />
-      <LineId Id="68" Count="10" />
-      <LineId Id="80" Count="0" />
-      <LineId Id="84" Count="0" />
-      <LineId Id="83" Count="0" />
-      <LineId Id="85" Count="0" />
-      <LineId Id="79" Count="0" />
-      <LineId Id="86" Count="8" />
-      <LineId Id="96" Count="1" />
-      <LineId Id="95" Count="0" />
-      <LineId Id="98" Count="3" />
-      <LineId Id="103" Count="2" />
-      <LineId Id="107" Count="1" />
-      <LineId Id="111" Count="0" />
-      <LineId Id="110" Count="0" />
-      <LineId Id="33" Count="0" />
-    </LineIds>
   </POU>
 </TcPlcObject>

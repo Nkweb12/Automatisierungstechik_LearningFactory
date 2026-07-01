@@ -19,6 +19,9 @@
     <CompilerDefines>VISU_USEPROPERTYINFO</CompilerDefines>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DUTs\eBetriebszustand.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>
@@ -31,22 +34,64 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Extruder\FB_System_FlaschenFullstand.TcPOU">
+    <Compile Include="POUs\Abfüll-modul\FB_Abfuellmodul.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Extruder\FB_System_Fullstand.TcPOU">
+    <Compile Include="POUs\Abfüll-modul\FB_Dispenser.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Förderband\FB_System_CNV.TcPOU">
+    <Compile Include="POUs\Abfüll-modul\FB_EZylinder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüll-modul\FB_Vereinzelung.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüll-modul\Transport\FB_Foerderband_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüll-modul\Transport\FB_Transport_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüll-modul\Transport\FB_Transport_A_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüll-modul\Transport\FB_Transport_E_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüll-modul\Transport\FB_Transport_Logik_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\FB_Abfuellmodul_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\FUN_Scale.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\IoT-Modul\FB_MQTT.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Vereinzelung\FB_SpeicherRohr.TcPOU">
+    <Compile Include="POUs\Manipulator_modul\FB_Manipulator.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Vereinzelung\FB_System_Vereinzelung.TcPOU">
+    <Compile Include="POUs\Manipulator_modul\Roboter\FB_Roboter.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator_modul\Roboter\FB_Roboter_Axis.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator_modul\Roboter\FB_Roboter_E.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator_modul\Roboter\FB_Roboter_Logik.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Statusleuchte-Modul\FB_Ampelleuchte.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Statusleuchte-Modul\FB_Blinklicht.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Visualization Manager.TcVMO">
@@ -60,9 +105,12 @@
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
-    <Folder Include="POUs\Förderband" />
-    <Folder Include="POUs\Extruder" />
-    <Folder Include="POUs\Vereinzelung" />
+    <Folder Include="POUs\Abfüll-modul\Transport" />
+    <Folder Include="POUs\Abfüll-modul" />
+    <Folder Include="POUs\IoT-Modul" />
+    <Folder Include="POUs\Manipulator_modul" />
+    <Folder Include="POUs\Manipulator_modul\Roboter" />
+    <Folder Include="POUs\Statusleuchte-Modul" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>
@@ -109,6 +157,10 @@
       <SystemLibrary>true</SystemLibrary>
       <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
     </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
@@ -116,6 +168,10 @@
     <PlaceholderReference Include="Tc2_System">
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_IotBase">
+      <DefaultResolution>Tc3_IotBase, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_IotBase</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
