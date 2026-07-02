@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="FB_Vereinzelung" Id="{c1584933-eefc-4d3d-9c85-584041b56ea2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Vereinzelung
+VAR_INPUT
+	//Steuervariablen
+	bEnable :BOOL;
+	bExecute :BOOL;
+	
+	//Hardwareeingänge
+	bSens1 :BOOL; //Flasche in der Kammer
+	bSens2 :BOOL; //Flasche im Rohr
+	bSens3 :BOOL; //Flasche verkehrt
+	bSens4 :BOOL; //Flasche am Förderband
+END_VAR
+VAR_OUTPUT
+	//Steuervariable 
+	eState :eBetriebszustand;
+	
+	//Hardwareausgägne
+	bGate1 :BOOL;
+	bGate2 :BOOL;
+END_VAR
+VAR
+	nState :INT :=100;
+	fbTON :TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbTON(IN:= , PT:= T#2S, Q=> , ET=> );
+
+IF NOT bEnable THEN
+	nState :=0;
+END_IF
+
+CASE nState OF
+	100: //Off oder nicht Betriebsbereit 
+	eState:=eBetriebszustand.Off;
+	
+	IF bSens1 AND bEnable THEN
+		nState:=21; //Ready
+	ELSIF bEnable THEN
+		nState :=0; //Init
+	END_IF
+	
+	
+	0: //Kammer ist leer
+	eState:=eBetriebszustand.Init;
+	
+	bGate1:=FALSE;
+	bGate2:=FALSE;
+	
+	IF bSens2 THEN
+		nState:=1; //Oben öffnen
+	END_IF
+	
+	
+	1: //Oben öffnen
+	eState := eBetriebszustand.Init;
+	
+	bGate1:=TRUE;
+	bGate2 :=FALSE;
+	
+	IF bSens1 THEN
+		nState:=2; //Oben schleißen
+	END_IF
+	
+	
+	2: //Oben schließen
+	eState := eBetriebszustand.Init;
+	
+	bGate1:=FALSE;
+	bGate2 :=FALSE;
+	fbTon.IN:=TRUE;
+	
+	IF fbTon.Q THEN
+		nState:=21; //Ready
+		fbTon.IN :=FALSE;
+	END_IF
+	
+	21: //Ready
+	eState := eBetriebszustand.Ready;
+	
+	bGate1:=FALSE;
+	bGate2 :=FALSE;
+	
+	IF bExecute THEN
+		nState:=3; //Unten öffnen
+	END_IF
+	
+	
+	3: //Unten öffnen
+	eState := eBetriebszustand.Production;
+	
+	bGate1:=FALSE;
+	bGate2 :=TRUE;
+	
+	IF bSens4 THEN
+		nState :=4; //Unten schließen
+	END_IF
+	
+	4: //Unten schließen
+	eState := eBetriebszustand.Production;
+	
+	bGate1:=FALSE;
+	bGate2 :=FALSE;
+	fbTon.IN :=TRUE;
+	
+	IF fbTon.Q THEN
+		nState:=41; //Done
+		fbTon.IN :=FALSE;
+	END_IF
+	
+	41: //Done
+	eState:= eBetriebszustand.Done;
+	
+	IF NOT bExecute THEN
+		nState :=0; //Kammer leer
+	END_IF
+	
+	
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

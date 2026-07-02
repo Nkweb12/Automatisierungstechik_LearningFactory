@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="FB_Blinklicht" Id="{2230570f-30ec-4216-9271-9ac903ffb1ef}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Blinklicht
+VAR_INPUT
+	bStartStop :BOOL;
+	tPeriod :TIME := T#1s;
+	
+END_VAR
+VAR_OUTPUT
+	bBlink :BOOL;
+	
+END_VAR
+VAR
+	fbTON :TON;
+	fbRtrig :R_Trig;
+	bEinAus :BOOL := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbRtrig(CLK:= bStartStop, Q=> );
+
+IF fbRtrig.Q THEN
+	bEinAus:= NOT bEinAus;
+END_IF
+
+
+//fbTON.IN := bBlink AND NOT fbTON.Q;
+//fbTON.PT:=T#1S;
+
+fbTON(in:=bEinAus AND NOT fbTON.Q , PT:= tPeriod, Q=>,ET=>);
+
+IF fbTON.ET<=fbTON.PT/2 THEN
+	bBlink := FALSE;
+ELSIF fbTON.ET>fbTON.PT/2 THEN
+	bBlink := TRUE;
+END_IF
+
+(*IF NOT bBlink THEN
+	bLEDrot := FALSE;
+END_IF
+*)
+
+IF NOT bStartStop THEN
+	bBlink :=FALSE;
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="FB_Ampelleuchte" Id="{d58c490b-72b0-4831-a24b-20659c864b4d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Ampelleuchte
+VAR_INPUT
+	eState : eBetriebszustand;
+END_VAR
+VAR_OUTPUT
+
+	
+	bAmpelGruen_out :BOOL;
+	bAmpelRot_out :BOOL;
+	bAmpelGelb_out :BOOL;
+	
+END_VAR
+VAR
+	fb_BlinklichtGr :FB_Blinklicht;
+	fb_BlinklichtRt :FB_Blinklicht;
+	fb_BlinklichtGb :FB_Blinklicht;
+	AmpelGruenblinken:BOOL;
+	AmpelRotblinken :BOOL;
+	AmpelGelbblinken :BOOL;
+	bAmpelGruen :BOOL;
+	bAmpelRot :BOOL;
+	bAmpelGelb :BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE eState OF
+	0: //OFF nicht Betriebsbereit
+	//keine Lampe leuchtet
+	bAmpelGruen :=FALSE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=FALSE;
+	AmpelRotblinken :=FALSE;
+	AmpelGelbblinken :=FALSE;
+	
+	1: //Error Fehlerbehafteter Stop (Sicherheitssteuerung)
+	//Rote Lampe Leuchtet 
+	bAmpelGruen :=FALSE;
+	bAmpelRot :=TRUE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=FALSE;
+	AmpelRotblinken :=FALSE;
+	AmpelGelbblinken :=FALSE;
+	
+	2: //Setup Wartung
+	//Rot und Gelb blinkt
+	bAmpelGruen :=FALSE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=FALSE;
+	AmpelRotblinken :=TRUE;
+	AmpelGelbblinken :=TRUE;
+	
+	3: //Warning Nicht Fehlerbehafteter nicht geplanter Stop
+	//Gelb blinken
+	bAmpelGruen :=FALSE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=FALSE;
+	AmpelRotblinken :=FALSE;
+	AmpelGelbblinken :=TRUE;
+	
+	4: //Init Herstellung Betriebsbereitschaft
+	//Gelb Grün blinkt
+	bAmpelGruen :=FALSE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=TRUE;
+	AmpelRotblinken :=FALSE;
+	AmpelGelbblinken :=TRUE;
+	
+	5: //Ready Betriebsbereit
+	//Grün blinkt
+	bAmpelGruen :=FALSE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=TRUE;
+	AmpelRotblinken :=FALSE;
+	AmpelGelbblinken :=FALSE;
+	
+	6: //Production Betrieb
+	//Grün leuchtet
+	bAmpelGruen :=TRUE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=FALSE;
+	AmpelRotblinken :=FALSE;
+	AmpelGelbblinken :=FALSE;
+	
+	7: //Done Betrieb abgeschlossen 
+	//Grün Gelb leuchten
+	bAmpelGruen :=TRUE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=TRUE;
+	AmpelGruenblinken:=FALSE;
+	AmpelRotblinken :=FALSE;
+	AmpelGelbblinken :=FALSE;
+	
+	8: //Stop
+	//Rot blinken
+	bAmpelGruen :=FALSE;
+	bAmpelRot :=FALSE;
+	bAmpelGelb :=FALSE;
+	AmpelGruenblinken:=FALSE;
+	AmpelRotblinken :=TRUE;
+	AmpelGelbblinken :=FALSE;
+END_CASE
+
+fb_BlinklichtGb(bStartStop:= AmpelGelbblinken, tPeriod:= T#1S , bBlink=> );
+fb_BlinklichtGr(bStartStop:= AmpelGruenblinken, tPeriod:= T#1S, bBlink=> );
+fb_BlinklichtRt(bStartStop:= AmpelRotblinken, tPeriod:= T#1S, bBlink=> );
+
+IF fb_BlinklichtGb.bBlink OR bAmpelGelb THEN
+	bAmpelGelb_out :=TRUE;
+ELSE
+	bAmpelGelb_out :=FALSE;
+END_IF
+IF fb_BlinklichtGr.bBlink OR bAmpelGruen THEN
+	bAmpelGruen_out :=TRUE;
+ELSE
+	bAmpelGruen_out :=FALSE;
+END_IF
+IF fb_BlinklichtRt.bBlink OR bAmpelRot THEN
+	bAmpelRot_out :=TRUE;
+ELSE
+	bAmpelRot_out :=FALSE;
+END_IF
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

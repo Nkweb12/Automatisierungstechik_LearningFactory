@@ -19,31 +19,13 @@
     <CompilerDefines>VISU_USEPROPERTYINFO</CompilerDefines>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DUTs\Betriebszustand.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GlobalTextList.TcGTLO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GVLs\GVL_PosKinematic.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="GVLs\IFC_HW.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="PlcTask.TcTTO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Abfüllmodul\FB_Abfuellmodul.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Abfüllmodul\FB_Dispenser.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Abfüllmodul\FB_EZylinder.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Abfüllmodul\FB_Vereinzelung.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\eBetriebszustand.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Extruder\FB_System_FlaschenFullstand.TcPOU">
@@ -52,37 +34,10 @@
     <Compile Include="POUs\Extruder\FB_System_Fullstand.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FUN_Scale.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\Förderband\FB_System_CNV.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\IoT\FB_MQTT.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Manipulator\FB_Manipulator.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter_Axis.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter_E.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter_Logik.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Statusleuchte\FB_Ampelleuchte.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Statusleuchte\FB_Blinklicht.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Transport\FB_Foerderband.TcPOU">
@@ -117,13 +72,8 @@
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
-    <Folder Include="POUs\Abfüllmodul" />
     <Folder Include="POUs\Förderband" />
     <Folder Include="POUs\Extruder" />
-    <Folder Include="POUs\IoT" />
-    <Folder Include="POUs\Manipulator" />
-    <Folder Include="POUs\Manipulator\Roboter" />
-    <Folder Include="POUs\Statusleuchte" />
     <Folder Include="POUs\Transport" />
     <Folder Include="POUs\Vereinzelung" />
     <Folder Include="VISUs" />
@@ -206,8 +156,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-        <Data>
-          <o xml:space="preserve" t="OptionKey">
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -294,14 +244,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-        </Data>
-        <TypeList>
-          <Type n="Boolean">System.Boolean</Type>
-          <Type n="Hashtable">System.Collections.Hashtable</Type>
-          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-          <Type n="String">System.String</Type>
-        </TypeList>
-      </XmlArchive>
+  </Data>
+  <TypeList>
+    <Type n="Boolean">System.Boolean</Type>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+  </TypeList>
+</XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

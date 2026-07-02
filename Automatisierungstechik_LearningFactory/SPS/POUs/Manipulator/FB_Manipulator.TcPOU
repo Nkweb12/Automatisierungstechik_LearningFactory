@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="FB_Manipulator" Id="{471d12c9-05b0-46e0-ada0-c9a21704113e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Manipulator
+VAR_INPUT
+	bEnable :BOOL; 
+	bExecute :BOOL; //Sensor band 
+END_VAR
+VAR_OUTPUT
+	bGripperClosed :BOOL;
+	eState :eBetriebszustand;
+END_VAR
+VAR
+	fb_Roboter :FB_Roboter;
+	fb_Roboter_Gripper : FB_Roboter_Axis;
+	fb_Gripper_E :FB_Roboter_E;
+	//FB_waage
+	//FB temp
+	
+	
+	nState :INT :=0;
+	nStation :INT :=0; 
+	pPositionX :REAL;
+	pPositionY :REAL;
+	pPositionZ :REAL;
+	
+	
+	
+	
+	nBottles: INT :=0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fb_Roboter(
+	bEnable:= , 
+	bExecute:= , 
+	pPositionX:= pPositionX, 
+	pPositionY:= pPositionY, 
+	pPositionZ:= pPositionZ, 
+	eState=> );
+	
+fb_Gripper_E(bRefMax_in:= bManEndGmax, bRefMin_in:= bManEndGmin, bRefMax_out=> , bRefMin_out=> );
+fb_Roboter_Gripper(
+	bEnable:= , 
+	bExecute:= , 
+	rPosition:= , 
+	bRefSens:= fb_Gripper_E.bRefMin_out, 
+	eState=> , 
+	ax:= IFC_HW.ax_ManG);
+	
+IF NOT bEnable THEN
+	nState :=0;
+END_IF	
+	
+	
+CASE nState OF 
+	0: //off
+	eState:=eBetriebszustand.Off;
+	IF bEnable THEN
+		nState:=1;
+	END_IF
+	
+	1: //init
+	eState:=eBetriebszustand.Init;
+	nbottles :=0;
+	fb_Roboter_Gripper.bEnable:=TRUE;
+	fb_Roboter.bEnable :=TRUE;
+	
+	IF (fb_Roboter_Gripper.eState = eBetriebszustand.Ready) AND (fb_Roboter.eState = eBetriebszustand.Ready) THEN 
+		nState:=2;
+	END_IF
+	
+	2://home 
+	eState:=eBetriebszustand.Init;
+	nStation :=0;
+	fb_Roboter.bExecute :=TRUE;
+	fb_Roboter_Gripper.rPosition := 7; //offen;
+	fb_Roboter_Gripper.bExecute :=TRUE;
+	bGripperClosed :=FALSE;
+	
+	IF (fb_Roboter_Gripper.eState = eBetriebszustand.Done) AND (fb_Roboter.eState = eBetriebszustand.Done) THEN 
+		fb_Roboter.bExecute :=FALSE;
+		fb_Roboter_Gripper.bExecute :=FALSE;
+		nState:=20;
+	END_IF
+	
+	20: //Ready
+	IF nstation =7 THEN
+		eState:=eBetriebszustand.Stop;
+		//zusätzlicher State  bei dem man nur mit quittierung rauskommt 
+	ELSE
+			eState:=eBetriebszustand.Ready;
+	END_IF
+	
+	nStation :=0;
+	
+	IF bExecute THEN 
+		nState:=21;
+	END_IF
+	
+	21: //open gripper
+	eState:=eBetriebszustand.Production;
+	fb_Roboter_Gripper.rPosition := 7; //offen;
+	fb_Roboter_Gripper.bExecute :=TRUE;
+	bGripperClosed :=FALSE;
+	
+	IF fb_Roboter_Gripper.eState = eBetriebszustand.Done THEN 
+		fb_Roboter_Gripper.bExecute :=FALSE;
+		nState:=22;
+		
+	END_IF
+	
+	22: //move to position
+	eState:= eBetriebszustand.Production;
+	nstation := 1;
+	fb_Roboter.bExecute :=TRUE;
+	
+	IF fb_Roboter.eState = eBetriebszustand.Done THEN
+		fb_Roboter.bExecute :=FALSE;
+		nstate:=23;
+	END_IF
+	
+	23: //close Gripper
+	eState:=eBetriebszustand.Production;
+	fb_Roboter_Gripper.rPosition := 9.4; //geschlossen;
+	fb_Roboter_Gripper.bExecute :=TRUE;
+	bGripperClosed :=TRUE;
+	
+	IF fb_Roboter_Gripper.eState = eBetriebszustand.Done THEN 
+		fb_Roboter_Gripper.bExecute :=FALSE;
+		nState:=24;
+		nstation := nStation+1;
+	END_IF
+	
+	24://move to new position
+	eState:= eBetriebszustand.Production;
+	
+	fb_Roboter.bExecute :=TRUE;
+	
+	IF fb_Roboter.eState = eBetriebszustand.Done THEN
+		fb_Roboter.bExecute :=FALSE;
+		nstate:=25;
+	END_IF
+	
+	25: //open gripper
+	eState:=eBetriebszustand.Production;
+	fb_Roboter_Gripper.rPosition := 7; //offen;
+	fb_Roboter_Gripper.bExecute :=TRUE;
+	bGripperClosed :=FALSE;
+	
+	IF fb_Roboter_Gripper.eState = eBetriebszustand.Done THEN 
+		fb_Roboter_Gripper.bExecute :=FALSE;
+		nState:=26;
+	END_IF
+	
+	26: //do Position
+	eState:=eBetriebszustand.Production;
+	IF nStation >3 THEN
+		nbottles := nBottles +1;
+		nstate :=27;
+	ELSIF nStation =3 THEN
+		//wait
+		nStation:= nstation +nBottles;
+		nstate :=23;
+	ELSIF nstation =2 THEN
+		//wait
+		nstate :=23;
+	ELSE 
+		nstate :=23;
+	END_IF
+	
+	27: //Done
+	eState:=eBetriebszustand.Done;
+	IF NOT bExecute THEN 
+		nstate:=2;
+	END_IF
+END_CASE
+
+
+
+CASE nStation OF
+	0: //Home
+	pPositionX :=GVL_PosKinematic.pXhome;
+	pPositionY :=GVL_PosKinematic.pYhome;
+	pPositionZ :=GVL_PosKinematic.pZhome;
+	//fb home
+	
+	1: //Conveyor
+	pPositionX :=GVL_PosKinematic.pXconv;
+	pPositionY :=GVL_PosKinematic.pYconv;
+	pPositionZ:=GVL_PosKinematic.pZconv;
+	//Fbconvoyer
+	
+	2: //Scale
+	pPositionX :=GVL_PosKinematic.pXscale;
+	pPositionY :=GVL_PosKinematic.pYscale;
+	pPositionZ:=GVL_PosKinematic.pZscale;
+	//scale wait
+	
+	3: //Heating
+	pPositionX :=GVL_PosKinematic.pXheat;
+	pPositionY :=GVL_PosKinematic.pYheat;
+	pPositionZ:=GVL_PosKinematic.pZheat;
+	//fb heating
+	
+	4: //storage1
+	pPositionX :=GVL_PosKinematic.pX1stor;
+	pPositionY :=GVL_PosKinematic.pYstor;
+	pPositionZ:=GVL_PosKinematic.pZstor;
+	
+	5: //storage2
+	pPositionX :=GVL_PosKinematic.pX2stor;
+	pPositionY :=GVL_PosKinematic.pYstor;
+	pPositionZ:=GVL_PosKinematic.pZstor;
+	
+	6: //storage3
+	pPositionX :=GVL_PosKinematic.pX3stor;
+	pPositionY :=GVL_PosKinematic.pYstor;
+	pPositionZ:=GVL_PosKinematic.pZstor;
+	
+	7: //storage4
+	pPositionX :=GVL_PosKinematic.pX4stor;
+	pPositionY :=GVL_PosKinematic.pYstor;
+	pPositionZ:=GVL_PosKinematic.pZstor;
+	
+	
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

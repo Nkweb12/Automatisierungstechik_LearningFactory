@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="MAIN" Id="{ddf72b8c-1ddf-4f34-9777-80f616cc38bc}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	fb_Ampelleuchte :FB_Ampelleuchte;	
+	fb_Abfuellmodul :FB_Abfuellmodul;
+	fb_Manipulator :FB_Manipulator;
+	
+	nState :INT :=0;
+	
+	fb_MQTT :FB_MQTT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[	
+fb_Ampelleuchte(eState:= , bAmpelGruen_out=> IFC_HW.bAmpelGrun, bAmpelRot_out=> IFC_HW.bAmpelRot, bAmpelGelb_out=> IFC_HW.bAmpelGelb);
+
+fb_Abfuellmodul(bEnable:= , bExecute:= , eState=> ); 
+fb_Manipulator(bEnable:= , bExecute:= , bGripperClosed=> IFC_HW.bGripperClosed, eState=> );
+
+IF fb_Abfuellmodul.eState = eBetriebszustand.Init OR fb_Manipulator.eState = eBetriebszustand.Init THEN
+	fb_Ampelleuchte.eState := eBetriebszustand.init;
+ELSIF fb_Abfuellmodul.eState = eBetriebszustand.ready AND fb_Manipulator.eState = eBetriebszustand.ready THEN
+	fb_Ampelleuchte.eState := eBetriebszustand.ready;
+ELSIF fb_Abfuellmodul.eState = eBetriebszustand.production OR fb_Manipulator.eState = eBetriebszustand.Production THEN
+	fb_Ampelleuchte.eState := eBetriebszustand.Production;
+ELSIF fb_Abfuellmodul.eState = eBetriebszustand.off AND fb_Manipulator.eState = eBetriebszustand.off THEN
+	fb_Ampelleuchte.eState := eBetriebszustand.off;
+ELSE 
+	fb_Ampelleuchte.eState := eBetriebszustand.Warning;
+END_IF
+
+
+IF NOT IFC_HW.bEnable THEN
+	nState :=0;
+END_IF
+CASE nState Of
+	0://off
+	fb_Abfuellmodul.bEnable :=FALSE;
+	fb_Manipulator.bEnable :=FALSE;
+	
+	IF IFC_HW.bEnable THEN
+		nstate:=1;
+	END_IF
+	
+	1: //init
+	fb_Abfuellmodul.bEnable :=TRUE;
+	fb_Manipulator.bEnable :=TRUE;
+	
+	IF fb_Abfuellmodul.eState = eBetriebszustand.Ready AND fb_Manipulator.eState = eBetriebszustand.Ready THEN
+		nState:=2;
+	END_IF
+	
+	2: //ready
+	IF IFC_HW.bExecute AND iFC_HW.bEinzelSens1 THEN
+		nstate :=21;
+	END_IF
+	IF NOT iFC_HW.bEinzelSens2 AND NOT iFC_HW.bEinzelSens1 THEN
+		fb_Abfuellmodul.bEnable :=FALSE;
+		nState :=1;
+	END_IF
+	
+	21: //bottle
+	fb_Abfuellmodul.bExecute :=TRUE;
+	
+	IF fb_Abfuellmodul.eState = eBetriebszustand.Done THEN
+		fb_Abfuellmodul.bExecute :=FALSE;
+		nstate :=22;
+	END_IF
+	
+	22: //mani
+	fb_Manipulator.bExecute :=TRUE;
+	
+	IF fb_Manipulator.eState = eBetriebszustand.Done THEN
+		fb_Manipulator.bExecute :=FALSE;
+		nState :=23;
+	END_IF
+	
+	23://done
+	IF NOT IFC_HW.bExecute THEN
+		nState:=2;
+	END_IF
+END_CASE
+
+
+fb_MQTT(data:= IFC_HW.bEnable);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

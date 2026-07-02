@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="FB_Abfuellmodul" Id="{35a725e7-19d9-4c5f-8521-6a74c0645e5e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Abfuellmodul
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+END_VAR
+VAR_OUTPUT
+	eState :eBetriebszustand;
+END_VAR
+VAR
+	fb_Vereinzelung :FB_Vereinzelung;
+	fb_Transport : FB_Transport;
+	fb_Dispenser1 :FB_Dispenser;
+	fb_Dispenser2 :FB_Dispenser;
+	fb_Dispenser3 :FB_Dispenser;
+	fb_EZylinder1 : FB_EZylinder;
+	fb_EZylinder2 : FB_EZylinder;
+
+	
+	nState :INT;
+	nStation :INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fb_Vereinzelung(
+	bEnable:= , 
+	bExecute:= , 
+	bSens1:= IFC_HW.bEinzelSens1, 
+	bSens2:= IFC_HW.bEinzelSens2, 
+	bSens3:= IFC_HW.bEinzelSens3, 
+	bSens4:= IFC_HW.bBandSens1, 
+	eState=> , 
+	bGate1=> fb_EZylinder1.bGate, 
+	bGate2=> fb_EZylinder2.bGate);
+	
+fb_Transport(
+	bEnable:= , 
+	bExecute:= , 
+	nStation:= nStation, 
+	bSens1:= IFC_HW.bBandSens1, 
+	bSens2:= IFC_HW.bBandSens2, 
+	bSens3:= IFC_HW.bBandSens3, 
+	bSens4:= IFC_HW.bBandSens4, 
+	eState=> , 
+	bStopper1=> IFC_HW.bBandHub1, 
+	bStopper2=> IFC_HW.bBandHub2, 
+	bStopper3=> IFC_HW.bBandHub3, 
+	ax:= IFC_HW.ax_BandMotor);
+	
+fb_Dispenser1(
+	bEnable:= , 
+	bExecute:= , 
+	rDistance:= IFC_HW.iBandFullmenge1*20, 
+	eState=> , 
+	ax:= IFC_HW.ax_Extruder1);
+fb_Dispenser2(
+	bEnable:= , 
+	bExecute:= , 
+	rDistance:= IFC_HW.iBandFullmenge1*20, 
+	eState=> , 
+	ax:= IFC_HW.ax_Extruder2);
+fb_Dispenser3(
+	bEnable:= , 
+	bExecute:= , 
+	rDistance:= IFC_HW.iBandFullmenge1*20, 
+	eState=> , 
+	ax:= IFC_HW.ax_Extruder3);
+	
+fb_EZylinder1(bGate:= , bError:= , bR1=> IFC_HW.bR1AKT1, bR2=> IFC_HW.bR2AKT1);
+fb_EZylinder2(bGate:= , bError:= , bR1=> IFC_HW.bR1AKT2, bR2=> IFC_HW.bR2AKT2);
+
+
+IF NOT bEnable THEN 
+	nState :=0;
+END_IF
+
+
+CASE nState OF
+	0: // Off
+	eState := eBetriebszustand.Off;
+	
+	fb_Vereinzelung.bEnable:=FALSE;
+	fb_Transport.bEnable :=FALSE;
+	fb_Dispenser1.bEnable :=FALSE;
+	fb_Dispenser2.bEnable :=FALSE;
+	fb_Dispenser3.bEnable :=FALSE;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF bEnable THEN
+		nstate :=10;
+	END_IF
+	
+	10:// Init
+	eState := eBetriebszustand.Init;
+	
+	fb_Vereinzelung.bEnable:=TRUE;
+	fb_Transport.bEnable :=TRUE;
+	fb_Dispenser1.bEnable :=TRUE;
+	fb_Dispenser2.bEnable :=TRUE;
+	fb_Dispenser3.bEnable :=TRUE;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF (fb_Vereinzelung.eState = eBetriebszustand.Ready) AND (fb_Transport.eState = eBetriebszustand.Ready) AND (fb_Dispenser1.eState = eBetriebszustand.Ready) AND (fb_Dispenser2.eState = eBetriebszustand.Ready) AND (fb_Dispenser3.eState = eBetriebszustand.Ready)THEN
+		nstate :=20;
+	END_IF
+	
+	20:// Ready
+	eState := eBetriebszustand.Ready;
+	
+	fb_Vereinzelung.bEnable:=TRUE;
+	fb_Transport.bEnable :=TRUE;
+	fb_Dispenser1.bEnable :=TRUE;
+	fb_Dispenser2.bEnable :=TRUE;
+	fb_Dispenser3.bEnable :=TRUE;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF bExecute THEN
+		nState:=30;
+	END_IF
+	
+	30:// Start
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=TRUE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	nStation :=1;
+	
+	IF (fb_Vereinzelung.eState = eBetriebszustand.Done) AND (fb_Transport.eState = eBetriebszustand.Done) THEN
+		nstate :=31;
+	END_IF
+	
+	31:// Dispenser1
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=TRUE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	nStation :=1;
+	
+	IF fb_Dispenser1.eState = eBetriebszustand.Done THEN
+		nState :=32;
+	END_IF
+	
+	32:// Bewegung zu Dispenser2
+	eState := eBetriebszustand.Production;
+	
+	nStation :=2;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF fb_Transport.eState = eBetriebszustand.Done THEN
+		nState :=33;
+	END_IF
+	
+	33:// Dispenser2
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=TRUE;
+	fb_Dispenser3.bExecute :=FALSE;
+	nStation :=2;
+	
+	IF fb_Dispenser2.eState = eBetriebszustand.Done THEN
+		nState :=34;
+	END_IF
+		
+	34:// Bewegung zu Dispenser3
+	eState := eBetriebszustand.Production;
+	
+	nStation :=3;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF fb_Transport.eState = eBetriebszustand.Done THEN
+		nState :=35;
+	END_IF
+	
+	35:// Dispenser3
+	eState := eBetriebszustand.Production;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=TRUE;
+	nStation :=3;
+	
+	IF fb_Dispenser3.eState = eBetriebszustand.Done THEN
+		nState :=36;
+	END_IF
+	
+	36:// Abholstation
+	eState := eBetriebszustand.Production;
+	
+	nStation :=4;
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=TRUE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+		
+	IF fb_Transport.eState = eBetriebszustand.Done THEN
+		nState :=40;
+	END_IF 
+	
+	40:// Done
+	eState := eBetriebszustand.Done;
+	
+	fb_Vereinzelung.bExecute :=FALSE;
+	fb_Transport.bExecute :=FALSE;
+	fb_Dispenser1.bExecute :=FALSE;
+	fb_Dispenser2.bExecute :=FALSE;
+	fb_Dispenser3.bExecute :=FALSE;
+	
+	IF not bExecute THEN
+		nState :=20;
+	END_IF
+	
+	
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

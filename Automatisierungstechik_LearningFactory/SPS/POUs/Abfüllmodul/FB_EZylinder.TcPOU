@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="FB_EZylinder" Id="{5264cd30-3c9c-4c04-b81c-e07e59db338a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_EZylinder
+VAR_INPUT
+	bGate :BOOL;
+	bError :BOOL;
+END_VAR
+VAR_OUTPUT
+	bR1 :BOOL;
+	bR2 :BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bR1 :=bGate;
+bR2 := NOT bGate;
+
+IF bError THEN
+	bR1 := FALSE;
+	bR2 := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

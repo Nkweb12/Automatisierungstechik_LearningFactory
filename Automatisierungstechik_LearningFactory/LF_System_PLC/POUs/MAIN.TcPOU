@@ -1,90 +1,104 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="MAIN" Id="{bdcd83ff-4f15-4910-8ed3-f4b8d9a489d3}" SpecialFunc="None">
+  <POU Name="MAIN" Id="{b69336c1-8a9b-421f-9584-90893724dc31}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
-	fb_Ampelleuchte :FB_Ampelleuchte;	
-	fb_Abfuellmodul :FB_Abfuellmodul;
-	fb_Manipulator :FB_Manipulator;
+// Systemeingangssignale (Stellsignale für Aktoren)
+	bEnable AT%Q* : BOOL;
+	bExecute AT%Q* : BOOL;
+	// Status Lampe
+	bIn_LedRot 		AT%I* : BOOL;
+	bIn_LedYellow 	AT%I* : BOOL;
+	bIn_LedGreen 	AT%I* : BOOL;
+	// Vereinzelung 
+	bIn_Schleuse1_L1 AT%I* : BOOL; // + Öffnen - Schließen
+	bIn_Schleuse1_L2 AT%I* : BOOL; // + Schließen - Öffnen
+	bIn_Schleuse2_L1 AT%I* : BOOL; // + Öffnen - Schließen
+	bIn_Schleuse2_L2 AT%I* : BOOL; // + Schließen - Öffnen
+	// Förderband
+	fIN_CnvPos AT%I* : LREAL;
+	bIN_Stopper1 AT%I* : BOOL;
+	bIN_Stopper2 AT%I* : BOOL;
+	bIN_Stopper3 AT%I* : BOOL;
+	// Extruder
+	fIN_ExtPos1 AT%I* : LREAL;
+	fIN_ExtPos2 AT%I* : LREAL;
+	fIN_ExtPos3 AT%I* : LREAL;
+	// Manipulator
+	fIN_ManXPos AT%I* : LREAL;
+	bIN_Gripper AT%I* : BOOL;
 	
-	nState :INT :=0;
+// Systemausgangssignale (Sensorsignale)
+	//Vereinzelung
+	bOut_VereinzelungNS1 AT%Q* : BOOL; // Flasche am Kopf
+	bOut_VereinzelungNS2 AT%Q* : BOOL; // Flasche im Speicher
+	bOut_VereinzelungNS3 AT%Q* : BOOL; // Flasche in Kammer
+	//Förderband
+	bOUT_CnvNS1 AT%Q* : BOOL;
+	bOUT_CnvNS2 AT%Q* : BOOL;
+	bOUT_CnvNS3 AT%Q* : BOOL;
+	bOUT_CnvNS4 AT%Q* : BOOL;
+	// Füllstandssensoren
+	iOut_USS1 AT%Q* : UINT;
+	iOut_USS2 AT%Q* : UINT;
+	iOut_USS3 AT%Q* : UINT;
+	// Manipulator
+	bOUT_SensMinX AT%Q* : BOOL;
+	bOUT_SensMaxX AT%Q* : BOOL;
 	
-	fb_MQTT :FB_MQTT;
+// System FB
+	fbVereinzelung : FB_System_Vereinzelung;	
+	fbCNV : FB_System_CNV;
+	fbExt1 : FB_System_Fullstand;
+	fbExt2 : FB_System_Fullstand;
+	fbExt3 : FB_System_Fullstand;
+	fbBottleLevel : FB_System_FlaschenFullstand;
+	fbManAxX : FB_System_LinAxis;
+		
+// Hilfsvariablen
+	bRefill1 : BOOL;
+	bRefill2 : BOOL;
+	bRefill3 : BOOL;
+	
+	PosSensMinX : INT := 620;
+	PosSensMaxX : INT := 1137;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[	
-fb_Ampelleuchte(eState:= , bAmpelGruen_out=> IFC_HW.bAmpelGrun, bAmpelRot_out=> IFC_HW.bAmpelRot, bAmpelGelb_out=> IFC_HW.bAmpelGelb);
+      <ST><![CDATA[fbVereinzelung(
+	bS1L1:= bIn_Schleuse1_L1, 
+	bS1L2:= bIn_Schleuse1_L2, 
+	bS2L1:= bIn_Schleuse2_L1, 
+	bS2L2:= bIn_Schleuse2_L2,
+	bNS1=> bOut_VereinzelungNS1, 
+	bNS2=> bOut_VereinzelungNS2, 
+	bNS3=> bOut_VereinzelungNS3,
+	bBottleDropped => );
+	
+fbCNV(
+	fPos:= fIN_CnvPos, 
+	bStopper1:= bIN_Stopper1, 
+	bStopper2:= bIN_Stopper2, 
+	bStopper3:= bIN_Stopper3, 
+	bBottleDropped := fbVereinzelung.bBottleDropped , 
+	bNS1=> bOut_CnvNS1 , 
+	bNS2=> bOut_CnvNS2 , 
+	bNS3=> bOut_CnvNS3 , 
+	bNS4=> bOut_CnvNS4,
+	bBottleLeft => );
+	
+fbExt1(bRefill:=bRefill1 , fPosExt:= fIN_ExtPos1, iOut=> iOut_USS1 );
+fbExt2(bRefill:=bRefill2 , fPosExt:= fIN_ExtPos2, iOut=> iOut_USS2 );
+fbExt3(bRefill:=bRefill3 , fPosExt:= fIN_ExtPos3, iOut=> iOut_USS3 );
 
-fb_Abfuellmodul(bEnable:= , bExecute:= , eState=> ); 
-fb_Manipulator(bEnable:= , bExecute:= , bGripperClosed=> IFC_HW.bGripperClosed, eState=> );
+fbBottleLevel(rFilling1 := fIN_ExtPos1, rFilling2 := fIN_ExtPos2 ,rFilling3 := fIN_ExtPos3,Reset:= fbCNV.bBottleDropped );
 
-IF fb_Abfuellmodul.eState = eBetriebszustand.Init OR fb_Manipulator.eState = eBetriebszustand.Init THEN
-	fb_Ampelleuchte.eState := eBetriebszustand.init;
-ELSIF fb_Abfuellmodul.eState = eBetriebszustand.ready AND fb_Manipulator.eState = eBetriebszustand.ready THEN
-	fb_Ampelleuchte.eState := eBetriebszustand.ready;
-ELSIF fb_Abfuellmodul.eState = eBetriebszustand.production OR fb_Manipulator.eState = eBetriebszustand.Production THEN
-	fb_Ampelleuchte.eState := eBetriebszustand.Production;
-ELSIF fb_Abfuellmodul.eState = eBetriebszustand.off AND fb_Manipulator.eState = eBetriebszustand.off THEN
-	fb_Ampelleuchte.eState := eBetriebszustand.off;
-ELSE 
-	fb_Ampelleuchte.eState := eBetriebszustand.Warning;
-END_IF
-
-
-IF NOT IFC_HW.bEnable THEN
-	nState :=0;
-END_IF
-CASE nState Of
-	0://off
-	fb_Abfuellmodul.bEnable :=FALSE;
-	fb_Manipulator.bEnable :=FALSE;
-	
-	IF IFC_HW.bEnable THEN
-		nstate:=1;
-	END_IF
-	
-	1: //init
-	fb_Abfuellmodul.bEnable :=TRUE;
-	fb_Manipulator.bEnable :=TRUE;
-	
-	IF fb_Abfuellmodul.eState = eBetriebszustand.Ready AND fb_Manipulator.eState = eBetriebszustand.Ready THEN
-		nState:=2;
-	END_IF
-	
-	2: //ready
-	IF IFC_HW.bExecute AND iFC_HW.bEinzelSens1 THEN
-		nstate :=21;
-	END_IF
-	IF NOT iFC_HW.bEinzelSens2 AND NOT iFC_HW.bEinzelSens1 THEN
-		fb_Abfuellmodul.bEnable :=FALSE;
-		nState :=1;
-	END_IF
-	
-	21: //bottle
-	fb_Abfuellmodul.bExecute :=TRUE;
-	
-	IF fb_Abfuellmodul.eState = eBetriebszustand.Done THEN
-		fb_Abfuellmodul.bExecute :=FALSE;
-		nstate :=22;
-	END_IF
-	
-	22: //mani
-	fb_Manipulator.bExecute :=TRUE;
-	
-	IF fb_Manipulator.eState = eBetriebszustand.Done THEN
-		fb_Manipulator.bExecute :=FALSE;
-		nState :=23;
-	END_IF
-	
-	23://done
-	IF NOT IFC_HW.bExecute THEN
-		nState:=2;
-	END_IF
-END_CASE
-
-
-fb_MQTT(data:= IFC_HW.bEnable);]]></ST>
+fbManAxX(fPos := fIN_ManXPos,
+		bGripperOpen := bIN_Gripper,
+		bSensMin => bOut_SensMinX,
+		bSensMax => bOut_SensMaxX, 
+		);
+]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

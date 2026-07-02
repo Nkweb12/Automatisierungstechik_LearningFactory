@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.18">
+  <POU Name="FB_Dispenser" Id="{0d589cac-ec0e-4855-8a93-bd61c46a3370}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Dispenser
+VAR_INPUT
+	bEnable :BOOL;
+	bExecute :BOOL;
+	rDistance :REAL;
+END_VAR
+VAR_OUTPUT
+	eState :eBetriebszustand;
+END_VAR
+VAR
+	mc_Reset :MC_Reset;
+	mc_Power :MC_Power;
+	mc_MoveRelative :MC_MoveRelative;
+	nState :INT :=0;
+END_VAR
+VAR_IN_OUT
+	ax :Axis_Ref;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ax.ReadStatus();
+mc_Reset(
+	Axis:= ax, 
+	Execute:= , 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+mc_Power(
+	Axis:= ax, 
+	Enable:= , 
+	Enable_Positive:= , 
+	Enable_Negative:= , 
+	Override:= , 
+	BufferMode:= , 
+	Options:= , 
+	Status=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+mc_MoveRelative(
+	Axis:= ax, 
+	Execute:= , 
+	Distance:= rDistance, 
+	Velocity:= 60, 
+	Acceleration:= 30, 
+	Deceleration:= 30, 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+
+IF NOT bEnable THEN
+	nState:=0;
+END_IF
+
+CASE nState OF 
+	0:
+	eState:=eBetriebszustand.Off;
+	mc_Power.Enable :=TRUE;
+	mc_Power.Enable_Positive:=TRUE;
+	
+	
+	IF bEnable AND NOT mc_power.Status THEN
+		nState :=10;
+	ELSIF mc_power.Status AND bEnable THEN
+		nState:=20;
+	END_IF
+	
+	10: // init Reset
+	eState:=eBetriebszustand.Init;
+	mc_Reset.Execute:=TRUE;
+	
+	IF mc_Reset.Done THEN
+		nState:=11;
+	END_IF
+	
+	11: // init Power
+	eState:=eBetriebszustand.Init;
+	mc_Reset.Execute:=FALSE;
+	mc_Power.Enable :=TRUE;
+	mc_Power.Enable_Positive:=TRUE;
+	
+	
+	IF mc_Power.Status THEN
+		nState:=20;
+	END_IF
+	
+	20: // Ready
+	eState:= eBetriebszustand.Ready;
+	
+	IF bExecute THEN 
+		nState:=30;
+	END_IF
+ 
+	30: // Kontinuierliche Bewegung
+	eState:=eBetriebszustand.Production;
+	mc_MoveRelative.Execute :=TRUE;
+	
+	IF mc_MoveRelative.Done THEN 
+		mc_MoveRelative.Execute:=FALSE;
+		nState :=40;
+	END_IF
+	
+	40: // Fertig
+	eState :=eBetriebszustand.Done;
+	
+	IF NOT bExecute THEN 
+		nState:=20;
+	END_IF
+
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
