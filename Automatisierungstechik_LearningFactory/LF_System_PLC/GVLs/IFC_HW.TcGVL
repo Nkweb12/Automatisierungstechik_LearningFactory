@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+<TcPlcObject Version="1.1.0.1">
   <GVL Name="IFC_HW" Id="{6d93a28a-bcbe-4118-afde-16fb93b1555f}">
     <Declaration><![CDATA[// In dieser GVL werden alle Variablen deklariert die auf die realen Klemmen zugreifen
 VAR_GLOBAL
@@ -93,6 +93,40 @@ VAR_GLOBAL
 		ax_ManG			: AXIS_REF; 		// Manipulator NC-Achse Gripper
 		
 		bGripperClosed		AT%Q*	: BOOL; 			// signal if gripper is closed ONLY USED IN SIM
+			// --- Für die Unity-Simulation (TeachingFactory) benötigt ---
+	BandExtruder1_Enable AT%Q* : BOOL;
+	BandExtruder1_Velocity AT%Q* : LREAL;
+	BandExtruder2_Enable AT%Q* : BOOL;
+	BandExtruder2_Velocity AT%Q* : LREAL;
+	BandExtruder3_Enable AT%Q* : BOOL;
+	BandExtruder3_Velocity AT%Q* : LREAL;
+	BandMotor_Enable AT%Q* : BOOL;
+	BandMotor_Velocity AT%Q* : LREAL;
+
+	EinzelActor1_1 AT%Q* : BOOL;
+	EinzelActor1_2 AT%Q* : BOOL;
+	EinzelActor2_1 AT%Q* : BOOL;
+	EinzelActor2_2 AT%Q* : BOOL;
+
+	ManAchseX_Enable AT%Q* : BOOL;
+	ManAchseX_Homed AT%I* : BOOL;
+	ManAchseX_Position AT%Q* : LREAL;
+	ManAchseX_Velocity AT%Q* : LREAL;
+	ManAchseY_Enable AT%Q* : BOOL;
+	ManAchseY_Homed AT%I* : BOOL;
+	ManAchseY_Position AT%Q* : LREAL;
+	ManAchseY_Velocity AT%Q* : LREAL;
+	ManAchseZ_Enable AT%Q* : BOOL;
+	ManAchseZ_Homed AT%I* : BOOL;
+	ManAchseZ_Position AT%Q* : LREAL;
+	ManAchseZ_Velocity AT%Q* : LREAL;
+	ManAchseGrip_Enable AT%Q* : BOOL;
+	ManAchseGrip_Homed AT%I* : BOOL;
+	ManAchseGrip_Position AT%Q* : LREAL;
+	ManAchseGrip_Velocity AT%Q* : LREAL;
+
+	bGripperClosed_doNotUse AT%Q* : BOOL;
+
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>
