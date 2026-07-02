@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="eBetriebszustand" Id="{6182209d-c8b8-496c-96b8-4ddafd52f68c}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE eBetriebszustand :
+(
+	Off        := 0,   // nicht betriebsbereit
+	Error      := 1,   // Fehlerbehafteter Stop
+	Setup      := 2,   // Wartung
+	Warning    := 3,   // nicht fehlerbehafteter, nicht geplanter Stop
+	Init       := 4,   // Herstellung Betriebsbereitschaft
+	Ready      := 5,   // betriebsbereit
+	Production := 6,   // Betrieb
+	Done       := 7,   // Betrieb abgeschlossen
+	Stop       := 8
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

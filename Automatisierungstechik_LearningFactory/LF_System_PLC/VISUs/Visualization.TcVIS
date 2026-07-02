@@ -5,7 +5,7 @@
       <Data>
         <o xml:space="preserve" t="VisualObject">
           <n n="LastVisuLanguageModelEntry" />
-          <v n="UniqueIdGenerator">"123"</v>
+          <v n="UniqueIdGenerator">"129"</v>
           <o n="VisualElemList" t="VisualElemList">
             <l n="VisualElementList" t="VisualElemCollection" cet="GenericVisualElem">
               <o>
@@ -797,7 +797,7 @@
                         </o>
                         <o>
                           <v n="Id">743958181L</v>
-                          <v n="Value">"MAIN.bIn_LedRot"</v>
+                          <v n="Value">"bAmpelRot"</v>
                         </o>
                         <o>
                           <v n="Id">2597686782L</v>
@@ -903,7 +903,7 @@
                         </o>
                         <o>
                           <v n="Id">743958181L</v>
-                          <v n="Value">"MAIN.bIn_LedYellow"</v>
+                          <v n="Value">"bAmpelGelb"</v>
                         </o>
                         <o>
                           <v n="Id">2597686782L</v>
@@ -1009,7 +1009,7 @@
                         </o>
                         <o>
                           <v n="Id">743958181L</v>
-                          <v n="Value">"MAIN.bIn_LedGreen"</v>
+                          <v n="Value">"bAmpelGrun"</v>
                         </o>
                         <o>
                           <v n="Id">2597686782L</v>
@@ -4569,7 +4569,7 @@
                     </o>
                     <o>
                       <v n="Id">743958181L</v>
-                      <v n="Value">"MAIN.bEnable"</v>
+                      <v n="Value">"bEnable"</v>
                     </o>
                     <o>
                       <v n="Id">2597686782L</v>

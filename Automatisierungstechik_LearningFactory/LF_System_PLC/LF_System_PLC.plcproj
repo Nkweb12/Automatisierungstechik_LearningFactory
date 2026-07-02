@@ -31,16 +31,73 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Abfüllmodul\FB_Abfuellmodul.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüllmodul\FB_Dispenser.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüllmodul\FB_EZylinder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Abfüllmodul\FB_Vereinzelung.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\eBetriebszustand.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Extruder\FB_System_FlaschenFullstand.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Extruder\FB_System_Fullstand.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\FUN_Scale.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Förderband\FB_System_CNV.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\IoT\FB_MQTT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator\FB_Manipulator.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter_Axis.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter_E.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Manipulator\Roboter\FB_Roboter_Logik.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Statusleuchte\FB_Ampelleuchte.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Statusleuchte\FB_Blinklicht.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Transport\FB_Foerderband.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Transport\FB_Transport.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Transport\FB_Transport_A.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Transport\FB_Transport_E.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Transport\FB_Transport_Logik.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Vereinzelung\FB_SpeicherRohr.TcPOU">
@@ -60,8 +117,14 @@
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\Abfüllmodul" />
     <Folder Include="POUs\Förderband" />
     <Folder Include="POUs\Extruder" />
+    <Folder Include="POUs\IoT" />
+    <Folder Include="POUs\Manipulator" />
+    <Folder Include="POUs\Manipulator\Roboter" />
+    <Folder Include="POUs\Statusleuchte" />
+    <Folder Include="POUs\Transport" />
     <Folder Include="POUs\Vereinzelung" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
@@ -109,6 +172,10 @@
       <SystemLibrary>true</SystemLibrary>
       <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
     </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
@@ -116,6 +183,10 @@
     <PlaceholderReference Include="Tc2_System">
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_IotBase">
+      <DefaultResolution>Tc3_IotBase, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_IotBase</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>

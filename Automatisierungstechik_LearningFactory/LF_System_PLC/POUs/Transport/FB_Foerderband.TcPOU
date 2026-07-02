@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
-  <POU Name="FB_Foerderband" Id="{7cd8323c-af42-490d-8582-bac774f97940}" SpecialFunc="None">
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Foerderband" Id="{753143e8-1446-40d1-a26f-9fae5d366681}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Foerderband
 VAR_INPUT
 	bEnable :BOOL;
@@ -165,81 +165,5 @@ CASE nState OF
 	END_IF
 END_CASE]]></ST>
     </Implementation>
-    <LineIds Name="FB_Foerderband">
-      <LineId Id="161" Count="0" />
-      <LineId Id="87" Count="5" />
-      <LineId Id="85" Count="0" />
-      <LineId Id="152" Count="0" />
-      <LineId Id="94" Count="10" />
-      <LineId Id="93" Count="0" />
-      <LineId Id="153" Count="0" />
-      <LineId Id="106" Count="14" />
-      <LineId Id="105" Count="0" />
-      <LineId Id="154" Count="0" />
-      <LineId Id="121" Count="11" />
-      <LineId Id="86" Count="0" />
-      <LineId Id="150" Count="1" />
-      <LineId Id="209" Count="1" />
-      <LineId Id="160" Count="0" />
-      <LineId Id="211" Count="0" />
-      <LineId Id="21" Count="0" />
-      <LineId Id="44" Count="1" />
-      <LineId Id="232" Count="0" />
-      <LineId Id="231" Count="0" />
-      <LineId Id="235" Count="0" />
-      <LineId Id="234" Count="0" />
-      <LineId Id="22" Count="0" />
-      <LineId Id="9" Count="0" />
-      <LineId Id="23" Count="0" />
-      <LineId Id="31" Count="1" />
-      <LineId Id="183" Count="0" />
-      <LineId Id="60" Count="2" />
-      <LineId Id="64" Count="0" />
-      <LineId Id="66" Count="0" />
-      <LineId Id="63" Count="0" />
-      <LineId Id="33" Count="0" />
-      <LineId Id="25" Count="0" />
-      <LineId Id="34" Count="0" />
-      <LineId Id="187" Count="0" />
-      <LineId Id="189" Count="0" />
-      <LineId Id="184" Count="2" />
-      <LineId Id="35" Count="0" />
-      <LineId Id="67" Count="2" />
-      <LineId Id="188" Count="0" />
-      <LineId Id="70" Count="0" />
-      <LineId Id="37" Count="0" />
-      <LineId Id="26" Count="0" />
-      <LineId Id="39" Count="0" />
-      <LineId Id="38" Count="0" />
-      <LineId Id="181" Count="0" />
-      <LineId Id="71" Count="1" />
-      <LineId Id="75" Count="0" />
-      <LineId Id="77" Count="0" />
-      <LineId Id="80" Count="0" />
-      <LineId Id="27" Count="0" />
-      <LineId Id="41" Count="0" />
-      <LineId Id="81" Count="3" />
-      <LineId Id="42" Count="0" />
-      <LineId Id="28" Count="0" />
-      <LineId Id="43" Count="0" />
-      <LineId Id="46" Count="0" />
-      <LineId Id="144" Count="3" />
-      <LineId Id="29" Count="0" />
-      <LineId Id="55" Count="0" />
-      <LineId Id="142" Count="0" />
-      <LineId Id="148" Count="0" />
-      <LineId Id="155" Count="2" />
-      <LineId Id="159" Count="0" />
-      <LineId Id="158" Count="0" />
-      <LineId Id="143" Count="0" />
-      <LineId Id="54" Count="0" />
-      <LineId Id="50" Count="2" />
-      <LineId Id="134" Count="3" />
-      <LineId Id="53" Count="0" />
-      <LineId Id="30" Count="0" />
-      <LineId Id="58" Count="1" />
-      <LineId Id="138" Count="3" />
-      <LineId Id="24" Count="0" />
-    </LineIds>
   </POU>
 </TcPlcObject>
