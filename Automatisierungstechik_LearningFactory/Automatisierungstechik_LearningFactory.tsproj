@@ -2691,7 +2691,7 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{4EFB2AFB-2EB8-4DAB-994F-E7682549AF3E}" Name="LF_System_PLC" PrjFilePath="LF_System_PLC\LF_System_PLC.plcproj" TmcFilePath="LF_System_PLC\LF_System_PLC.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{E4C36486-258F-E779-3D6C-89B7946C9787}" TmcPath="LF_System_PLC\LF_System_PLC.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{6F0B485B-4C91-427D-D88A-A8F2771F7E7C}" TmcPath="LF_System_PLC\LF_System_PLC.tmc">
 					<Name>LF_System_PLC Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -2807,6 +2807,107 @@ External Setpoint Generation:
 						<Var>
 							<Name>IFC_HW.ax_ManG.PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder1_Enable</Name>
+							<Comment><![CDATA[ --- Für die Unity-Simulation (TeachingFactory) benötigt ---]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder2_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder3_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandMotor_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.EinzelActor1_1</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.EinzelActor1_2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.EinzelActor2_1</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.EinzelActor2_2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseX_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseY_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseZ_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseGrip_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.bGripperClosed_doNotUse</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder1_Velocity</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder2_Velocity</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder3_Velocity</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandMotor_Velocity</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseX_Position</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseX_Velocity</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseY_Position</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseY_Velocity</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseZ_Position</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseZ_Velocity</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseGrip_Position</Name>
+							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseGrip_Velocity</Name>
+							<Type>LREAL</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
@@ -2952,6 +3053,22 @@ External Setpoint Generation:
 						<Var>
 							<Name>IFC_HW.ax_ManG.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseX_Homed</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseY_Homed</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseZ_Homed</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseGrip_Homed</Name>
+							<Type>BOOL</Type>
 						</Var>
 					</Vars>
 					<Contexts>
