@@ -6,10 +6,13 @@ VAR
 	fb_Ampelleuchte :FB_Ampelleuchte;	
 	fb_Abfuellmodul :FB_Abfuellmodul;
 	fb_Manipulator :FB_Manipulator;
-	
+
 	nState :INT :=0;
-	
+
 	fb_MQTT :FB_MQTT;
+
+	fbMqttPublisher : FB_MqttPublisher;
+	rWeight : REAL; // aktuelles Gewicht von der Waage in Gramm
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -31,6 +34,21 @@ ELSE
 	fb_Ampelleuchte.eState := eBetriebszustand.Warning;
 END_IF
 
+// Rohwert der Waage in Gramm umrechnen — Kalibrierwerte anpassen!
+rWeight := FUN_Scale(
+    ix      := INT_TO_UINT(IFC_HW.iWaageMesswert),
+    ix_min  := 0,       // Rohwert der Waage bei 0 g
+    ix_max  := 1000,    // Rohwert der Waage bei bekanntem Referenzgewicht
+    ry_min  := 0.0,
+    ry_max  := 1000.0   // zugehöriges Referenzgewicht in Gramm
+);
+
+fbMqttPublisher(
+    bEnable      := IFC_HW.bEnable,
+    rWeight      := rWeight,
+    rTemperature := 25.0, // Platzhalter, bis Temperatur ausgewertet wird
+    rVibration   := 0.5   // Platzhalter, kein Sensor vorhanden
+);
 
 IF NOT IFC_HW.bEnable THEN
 	nState :=0;

@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_MqttPublisher" Id="{6f30bc8f-a276-470f-8f6f-0da478ae44f9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MqttPublisher
+VAR_INPUT
+    bEnable : BOOL := TRUE;
+
+    // Diese Werte kommen später von deiner Learning Factory / SPS
+    rWeight : REAL;
+    rTemperature : REAL;
+    rVibration : REAL;
+END_VAR
+
+VAR_OUTPUT
+    bConnected : BOOL;
+    bError : BOOL;
+    hrErrorCode : HRESULT;
+END_VAR
+
+VAR
+    fbMqttClient : FB_IotMqttClient;
+
+    bSetParameter : BOOL := TRUE;
+    bMetaSent : BOOL := FALSE;
+
+    fbTimerPublish : TON := (PT := T#10S);
+
+    nSendStep : INT := 0;
+
+    sTopic : STRING(255);
+    sPayload : STRING(255);
+
+    bPublishResult : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ------------------------------------------------------------
+// 1. MQTT-Verbindungsparameter einmalig setzen
+// ------------------------------------------------------------
+IF bSetParameter THEN
+    bSetParameter := FALSE;
+
+    fbMqttClient.sClientId := 'vier_gewinnt';
+    fbMqttClient.sHostName := '158.180.44.197';
+    fbMqttClient.nHostPort := 1883;
+    fbMqttClient.sUserName := 'bobm';
+    fbMqttClient.sUserPassword := 'letmein';
+    fbMqttClient.nKeepAlive := 60;
+END_IF
+
+
+// ------------------------------------------------------------
+// 2. MQTT-Client zyklisch ausführen
+// Wichtig: Execute muss in jedem SPS-Zyklus aufgerufen werden
+// ------------------------------------------------------------
+fbMqttClient.Execute(bEnable);
+
+
+// Status nach außen geben
+bConnected := fbMqttClient.bConnected;
+bError := fbMqttClient.bError;
+hrErrorCode := fbMqttClient.hrErrorCode;
+
+
+// ------------------------------------------------------------
+// 3. Wenn Verbindung steht: Metadaten und Messwerte senden
+// ------------------------------------------------------------
+IF fbMqttClient.bConnected THEN
+
+    // Metadaten einmalig nach Verbindungsaufbau senden
+    IF NOT bMetaSent AND (nSendStep = 0) THEN
+        nSendStep := 1;
+    END_IF
+
+    // Wenn Metadaten gesendet wurden: alle 10 Sekunden Messwerte senden
+    fbTimerPublish(
+        IN := bMetaSent AND (nSendStep = 0),
+        PT := T#10S
+    );
+
+    IF fbTimerPublish.Q AND (nSendStep = 0) THEN
+        nSendStep := 10;
+    END_IF
+
+
+    // --------------------------------------------------------
+    // 4. Senden als kleine Schrittkette
+    // Pro SPS-Zyklus wird eine MQTT-Nachricht gesendet.
+    // Das ist übersichtlicher und stabiler als alles auf einmal.
+    // --------------------------------------------------------
+    CASE nSendStep OF
+
+        // -------------------------
+        // Einmalige retained Metadaten
+        // -------------------------
+
+        1:
+            sTopic := 'aut/SoSe26/vier_gewinnt/$$groupsname';
+            sPayload := 'vier_gewinnt';
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            nSendStep := 2;
+
+
+        2:
+            sTopic := 'aut/SoSe26/vier_gewinnt/names';
+            sPayload := 'Brieger, Kramer, Gneuss';
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            nSendStep := 3;
+
+
+        3:
+            sTopic := 'aut/SoSe26/vier_gewinnt/weight/$$unit';
+            sPayload := 'g';
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            nSendStep := 4;
+
+
+        4:
+            sTopic := 'aut/SoSe26/vier_gewinnt/temperature/$$unit';
+            sPayload := 'degC';
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            nSendStep := 5;
+
+
+        5:
+            sTopic := 'aut/SoSe26/vier_gewinnt/vibration/$$unit';
+            sPayload := 'm/s2';
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            bMetaSent := TRUE;
+            nSendStep := 0;
+
+
+        // -------------------------
+        // Periodische Messwerte alle 10 Sekunden
+        // -------------------------
+
+        10:
+            sTopic := 'aut/SoSe26/vier_gewinnt/weight';
+            sPayload := REAL_TO_STRING(rWeight);
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            nSendStep := 11;
+
+
+        11:
+            sTopic := 'aut/SoSe26/vier_gewinnt/temperature';
+            sPayload := REAL_TO_STRING(rTemperature);
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            nSendStep := 12;
+
+
+        12:
+            sTopic := 'aut/SoSe26/vier_gewinnt/vibration';
+            sPayload := REAL_TO_STRING(rVibration);
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+
+            nSendStep := 0;
+
+    END_CASE
+
+END_IF
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
