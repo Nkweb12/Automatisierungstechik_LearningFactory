@@ -2691,7 +2691,7 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{4EFB2AFB-2EB8-4DAB-994F-E7682549AF3E}" Name="LF_System_PLC" PrjFilePath="LF_System_PLC\LF_System_PLC.plcproj" TmcFilePath="LF_System_PLC\LF_System_PLC.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{6F0B485B-4C91-427D-D88A-A8F2771F7E7C}" TmcPath="LF_System_PLC\LF_System_PLC.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{A3054524-9AAF-DD57-641B-A88DCED246A8}" TmcPath="LF_System_PLC\LF_System_PLC.tmc">
 					<Name>LF_System_PLC Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -2793,6 +2793,23 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>IFC_HW.BandExtruder1_Enable</Name>
+							<Comment><![CDATA[ --- Für die Unity-Simulation (TeachingFactory) benötigt ---]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder2_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandExtruder3_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.BandMotor_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>IFC_HW.ax_ManX.PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
@@ -2809,21 +2826,20 @@ External Setpoint Generation:
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>IFC_HW.BandExtruder1_Enable</Name>
-							<Comment><![CDATA[ --- Für die Unity-Simulation (TeachingFactory) benötigt ---]]></Comment>
-							<Type>BOOL</Type>
+							<Name>IFC_HW.BandExtruder1_Velocity</Name>
+							<Type>LREAL</Type>
 						</Var>
 						<Var>
-							<Name>IFC_HW.BandExtruder2_Enable</Name>
-							<Type>BOOL</Type>
+							<Name>IFC_HW.BandExtruder2_Velocity</Name>
+							<Type>LREAL</Type>
 						</Var>
 						<Var>
-							<Name>IFC_HW.BandExtruder3_Enable</Name>
-							<Type>BOOL</Type>
+							<Name>IFC_HW.BandExtruder3_Velocity</Name>
+							<Type>LREAL</Type>
 						</Var>
 						<Var>
-							<Name>IFC_HW.BandMotor_Enable</Name>
-							<Type>BOOL</Type>
+							<Name>IFC_HW.BandMotor_Velocity</Name>
+							<Type>LREAL</Type>
 						</Var>
 						<Var>
 							<Name>IFC_HW.EinzelActor1_1</Name>
@@ -2850,34 +2866,6 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>IFC_HW.ManAchseZ_Enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>IFC_HW.ManAchseGrip_Enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>IFC_HW.bGripperClosed_doNotUse</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>IFC_HW.BandExtruder1_Velocity</Name>
-							<Type>LREAL</Type>
-						</Var>
-						<Var>
-							<Name>IFC_HW.BandExtruder2_Velocity</Name>
-							<Type>LREAL</Type>
-						</Var>
-						<Var>
-							<Name>IFC_HW.BandExtruder3_Velocity</Name>
-							<Type>LREAL</Type>
-						</Var>
-						<Var>
-							<Name>IFC_HW.BandMotor_Velocity</Name>
-							<Type>LREAL</Type>
-						</Var>
-						<Var>
 							<Name>IFC_HW.ManAchseX_Position</Name>
 							<Type>LREAL</Type>
 						</Var>
@@ -2892,6 +2880,18 @@ External Setpoint Generation:
 						<Var>
 							<Name>IFC_HW.ManAchseY_Velocity</Name>
 							<Type>LREAL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseZ_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.ManAchseGrip_Enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>IFC_HW.bGripperClosed_doNotUse</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>IFC_HW.ManAchseZ_Position</Name>

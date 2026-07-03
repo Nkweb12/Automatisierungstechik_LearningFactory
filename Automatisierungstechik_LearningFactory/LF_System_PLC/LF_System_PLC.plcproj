@@ -52,6 +52,9 @@
     <Compile Include="POUs\Extruder\FB_System_Fullstand.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\FB_MqttPublisher.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\FUN_Scale.TcPOU">
       <SubType>Code</SubType>
     </Compile>
