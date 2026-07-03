@@ -45,7 +45,8 @@ VAR
     sPayload : STRING(255);
 
     bPublishResult : BOOL;
-END_VAR]]></Declaration>
+END_VAR
+]]></Declaration>
     <Implementation>
       <ST><![CDATA[// ------------------------------------------------------------
 // 1. MQTT-Verbindungsparameter einmalig setzen
@@ -117,7 +118,7 @@ IF fbMqttClient.bConnected THEN
                 nPayloadSize := TO_UDINT(LEN(sPayload)),
                 eQoS := TcIotMqttQos.AtMostOnceDelivery,
                 bRetain := TRUE,
-                bQueue := FALSE
+                bQueue := TRUE
             );
 
             nSendStep := 2;
@@ -133,7 +134,7 @@ IF fbMqttClient.bConnected THEN
                 nPayloadSize := TO_UDINT(LEN(sPayload)),
                 eQoS := TcIotMqttQos.AtMostOnceDelivery,
                 bRetain := TRUE,
-                bQueue := FALSE
+                bQueue := TRUE
             );
 
             nSendStep := 3;
@@ -149,7 +150,7 @@ IF fbMqttClient.bConnected THEN
                 nPayloadSize := TO_UDINT(LEN(sPayload)),
                 eQoS := TcIotMqttQos.AtMostOnceDelivery,
                 bRetain := TRUE,
-                bQueue := FALSE
+                bQueue := TRUE
             );
 
             nSendStep := 4;
@@ -165,7 +166,7 @@ IF fbMqttClient.bConnected THEN
                 nPayloadSize := TO_UDINT(LEN(sPayload)),
                 eQoS := TcIotMqttQos.AtMostOnceDelivery,
                 bRetain := TRUE,
-                bQueue := FALSE
+                bQueue := TRUE
             );
 
             nSendStep := 5;
@@ -181,12 +182,12 @@ IF fbMqttClient.bConnected THEN
                 nPayloadSize := TO_UDINT(LEN(sPayload)),
                 eQoS := TcIotMqttQos.AtMostOnceDelivery,
                 bRetain := TRUE,
-                bQueue := FALSE
+                bQueue := TRUE
             );
-			
-			nSendStep := 6;
-			
-		 6:
+
+            nSendStep := 6;
+
+        6:
             sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel2/$$unit';
             sPayload := '1';
 
@@ -196,12 +197,12 @@ IF fbMqttClient.bConnected THEN
                 nPayloadSize := TO_UDINT(LEN(sPayload)),
                 eQoS := TcIotMqttQos.AtMostOnceDelivery,
                 bRetain := TRUE,
-                bQueue := FALSE
+                bQueue := TRUE
             );
-			
-			nSendStep := 7;
-			
-		 7:
+
+            nSendStep := 7;
+
+        7:
             sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel3/$$unit';
             sPayload := '1';
 
@@ -211,9 +212,8 @@ IF fbMqttClient.bConnected THEN
                 nPayloadSize := TO_UDINT(LEN(sPayload)),
                 eQoS := TcIotMqttQos.AtMostOnceDelivery,
                 bRetain := TRUE,
-                bQueue := FALSE
+                bQueue := TRUE
             );
-			 
 
             bMetaSent := TRUE;
             nSendStep := 0;
@@ -223,56 +223,88 @@ IF fbMqttClient.bConnected THEN
         // Periodische Messwerte alle 10 Sekunden
         // -------------------------
 
-           sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel1';
-    sPayload := UINT_TO_STRING(iFillLevel1);
+        10:
+            sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel1';
+            sPayload := UINT_TO_STRING(iFillLevel1);
 
-    bPublishResult := fbMqttClient.Publish(
-        sTopic := sTopic,
-        pPayload := ADR(sPayload),
-        nPayloadSize := TO_UDINT(LEN(sPayload)),
-        eQoS := TcIotMqttQos.AtMostOnceDelivery,
-        bRetain := TRUE,
-        bQueue := FALSE
-    );
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := TRUE
+            );
 
-    nSendStep := 22;
-
-
-22:
-    sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel2';
-    sPayload := UINT_TO_STRING(iFillLevel2);
-
-    bPublishResult := fbMqttClient.Publish(
-        sTopic := sTopic,
-        pPayload := ADR(sPayload),
-        nPayloadSize := TO_UDINT(LEN(sPayload)),
-        eQoS := TcIotMqttQos.AtMostOnceDelivery,
-        bRetain := TRUE,
-        bQueue := FALSE
-    );
-
-    nSendStep := 23;
+            nSendStep := 22;
 
 
-23:
-    sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel3';
-    sPayload := UINT_TO_STRING(iFillLevel3);
+        22:
+            sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel2';
+            sPayload := UINT_TO_STRING(iFillLevel2);
 
-    bPublishResult := fbMqttClient.Publish(
-        sTopic := sTopic,
-        pPayload := ADR(sPayload),
-        nPayloadSize := TO_UDINT(LEN(sPayload)),
-        eQoS := TcIotMqttQos.AtMostOnceDelivery,
-        bRetain := TRUE,
-        bQueue := FALSE
-    );
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := TRUE
+            );
 
-    nSendStep := 0;
+            nSendStep := 23;
+
+
+        23:
+            sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel3';
+            sPayload := UINT_TO_STRING(iFillLevel3);
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := TRUE
+            );
+
+            nSendStep := 24;
+
+
+        24:
+            sTopic := 'aut/SoSe26/vier_gewinnt/iBandFullmenge1';
+            sPayload := INT_TO_STRING(iBandFullmenge1);
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := TRUE
+            );
+
+            nSendStep := 25;
+
+
+        25:
+            sTopic := 'aut/SoSe26/vier_gewinnt/rPcntFillLevel';
+            sPayload := REAL_TO_STRING(rPcntFillLevel);
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := TRUE
+            );
+
+            nSendStep := 0;
 
     END_CASE
 
 END_IF
-
 ]]></ST>
     </Implementation>
   </POU>
