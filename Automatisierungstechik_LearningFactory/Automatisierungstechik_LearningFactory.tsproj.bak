@@ -2077,6 +2077,11 @@ External Setpoint Generation:
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
+						<EncPara>
+							<Inc RefSearchInverse="true" RefSyncInverse="false"/>
+							<ParameterChanged>257</ParameterChanged>
+							<ParameterChanged>258</ParameterChanged>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Eingänge</Name>
 							<Var>
@@ -2231,6 +2236,12 @@ External Setpoint Generation:
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
+						<EncPara>
+							<Inc RefSearchInverse="true" RefSyncInverse="false"/>
+							<ParameterChanged>11</ParameterChanged>
+							<ParameterChanged>257</ParameterChanged>
+							<ParameterChanged>258</ParameterChanged>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Eingänge</Name>
 							<Var>
@@ -2385,6 +2396,11 @@ External Setpoint Generation:
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
+						<EncPara>
+							<Inc RefSearchInverse="true" RefSyncInverse="false"/>
+							<ParameterChanged>257</ParameterChanged>
+							<ParameterChanged>258</ParameterChanged>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Eingänge</Name>
 							<Var>
@@ -2691,7 +2707,7 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{4EFB2AFB-2EB8-4DAB-994F-E7682549AF3E}" Name="LF_System_PLC" PrjFilePath="LF_System_PLC\LF_System_PLC.plcproj" TmcFilePath="LF_System_PLC\LF_System_PLC.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{F72F52E7-B30E-4D1B-0575-6A5959647768}" TmcPath="LF_System_PLC\LF_System_PLC.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{CEFDAABA-37D9-4A42-FFAA-F14A54868B3F}" TmcPath="LF_System_PLC\LF_System_PLC.tmc">
 					<Name>LF_System_PLC Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
