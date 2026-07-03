@@ -3,12 +3,26 @@
   <POU Name="FB_MqttPublisher" Id="{6f30bc8f-a276-470f-8f6f-0da478ae44f9}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_MqttPublisher
 VAR_INPUT
-    bEnable : BOOL := TRUE;
+     bEnableMqtt : BOOL := TRUE;
 
-    // Diese Werte kommen später von deiner Learning Factory / SPS
-    rWeight : REAL;
-    rTemperature : REAL;
-    rVibration : REAL;
+    iBandFullmenge1 : INT;
+
+    bEnable : BOOL;
+    bExecute : BOOL;
+
+    bEinzelSens1 : BOOL;
+    bEinzelSens2 : BOOL;
+    bEinzelSens3 : BOOL;
+
+    bBandSens1 : BOOL;
+    bBandSens2 : BOOL;
+    bBandSens3 : BOOL;
+    bBandSens4 : BOOL;
+
+    rPcntFillLevel : REAL;
+    iFillLevel1 : UINT;
+    iFillLevel2 : UINT;
+    iFillLevel3 : UINT;
 END_VAR
 
 VAR_OUTPUT
@@ -126,8 +140,8 @@ IF fbMqttClient.bConnected THEN
 
 
         3:
-            sTopic := 'aut/SoSe26/vier_gewinnt/weight/$$unit';
-            sPayload := 'g';
+            sTopic := 'aut/SoSe26/vier_gewinnt/iBandFullmenge1/$$unit';
+            sPayload := '1';
 
             bPublishResult := fbMqttClient.Publish(
                 sTopic := sTopic,
@@ -142,8 +156,8 @@ IF fbMqttClient.bConnected THEN
 
 
         4:
-            sTopic := 'aut/SoSe26/vier_gewinnt/temperature/$$unit';
-            sPayload := 'degC';
+            sTopic := 'aut/SoSe26/vier_gewinnt/rPcntFillLevel/$$unit';
+            sPayload := '%';
 
             bPublishResult := fbMqttClient.Publish(
                 sTopic := sTopic,
@@ -158,8 +172,8 @@ IF fbMqttClient.bConnected THEN
 
 
         5:
-            sTopic := 'aut/SoSe26/vier_gewinnt/vibration/$$unit';
-            sPayload := 'm/s2';
+            sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel1/$$unit';
+            sPayload := '1';
 
             bPublishResult := fbMqttClient.Publish(
                 sTopic := sTopic,
@@ -169,6 +183,37 @@ IF fbMqttClient.bConnected THEN
                 bRetain := TRUE,
                 bQueue := FALSE
             );
+			
+			nSendStep := 6;
+			
+		 6:
+            sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel2/$$unit';
+            sPayload := '1';
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+			
+			nSendStep := 7;
+			
+		 7:
+            sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel3/$$unit';
+            sPayload := '1';
+
+            bPublishResult := fbMqttClient.Publish(
+                sTopic := sTopic,
+                pPayload := ADR(sPayload),
+                nPayloadSize := TO_UDINT(LEN(sPayload)),
+                eQoS := TcIotMqttQos.AtMostOnceDelivery,
+                bRetain := TRUE,
+                bQueue := FALSE
+            );
+			 
 
             bMetaSent := TRUE;
             nSendStep := 0;
@@ -178,52 +223,51 @@ IF fbMqttClient.bConnected THEN
         // Periodische Messwerte alle 10 Sekunden
         // -------------------------
 
-        10:
-            sTopic := 'aut/SoSe26/vier_gewinnt/weight';
-            sPayload := REAL_TO_STRING(rWeight);
+           sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel1';
+    sPayload := UINT_TO_STRING(iFillLevel1);
 
-            bPublishResult := fbMqttClient.Publish(
-                sTopic := sTopic,
-                pPayload := ADR(sPayload),
-                nPayloadSize := TO_UDINT(LEN(sPayload)),
-                eQoS := TcIotMqttQos.AtMostOnceDelivery,
-                bRetain := TRUE,
-                bQueue := FALSE
-            );
+    bPublishResult := fbMqttClient.Publish(
+        sTopic := sTopic,
+        pPayload := ADR(sPayload),
+        nPayloadSize := TO_UDINT(LEN(sPayload)),
+        eQoS := TcIotMqttQos.AtMostOnceDelivery,
+        bRetain := TRUE,
+        bQueue := FALSE
+    );
 
-            nSendStep := 11;
-
-
-        11:
-            sTopic := 'aut/SoSe26/vier_gewinnt/temperature';
-            sPayload := REAL_TO_STRING(rTemperature);
-
-            bPublishResult := fbMqttClient.Publish(
-                sTopic := sTopic,
-                pPayload := ADR(sPayload),
-                nPayloadSize := TO_UDINT(LEN(sPayload)),
-                eQoS := TcIotMqttQos.AtMostOnceDelivery,
-                bRetain := TRUE,
-                bQueue := FALSE
-            );
-
-            nSendStep := 12;
+    nSendStep := 22;
 
 
-        12:
-            sTopic := 'aut/SoSe26/vier_gewinnt/vibration';
-            sPayload := REAL_TO_STRING(rVibration);
+22:
+    sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel2';
+    sPayload := UINT_TO_STRING(iFillLevel2);
 
-            bPublishResult := fbMqttClient.Publish(
-                sTopic := sTopic,
-                pPayload := ADR(sPayload),
-                nPayloadSize := TO_UDINT(LEN(sPayload)),
-                eQoS := TcIotMqttQos.AtMostOnceDelivery,
-                bRetain := TRUE,
-                bQueue := FALSE
-            );
+    bPublishResult := fbMqttClient.Publish(
+        sTopic := sTopic,
+        pPayload := ADR(sPayload),
+        nPayloadSize := TO_UDINT(LEN(sPayload)),
+        eQoS := TcIotMqttQos.AtMostOnceDelivery,
+        bRetain := TRUE,
+        bQueue := FALSE
+    );
 
-            nSendStep := 0;
+    nSendStep := 23;
+
+
+23:
+    sTopic := 'aut/SoSe26/vier_gewinnt/iFillLevel3';
+    sPayload := UINT_TO_STRING(iFillLevel3);
+
+    bPublishResult := fbMqttClient.Publish(
+        sTopic := sTopic,
+        pPayload := ADR(sPayload),
+        nPayloadSize := TO_UDINT(LEN(sPayload)),
+        eQoS := TcIotMqttQos.AtMostOnceDelivery,
+        bRetain := TRUE,
+        bQueue := FALSE
+    );
+
+    nSendStep := 0;
 
     END_CASE
 

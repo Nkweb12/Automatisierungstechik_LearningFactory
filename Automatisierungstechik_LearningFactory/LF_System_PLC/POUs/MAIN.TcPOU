@@ -11,8 +11,8 @@ VAR
 
 	fb_MQTT :FB_MQTT;
 
-	fbMqttPublisher : FB_MqttPublisher;
-	rWeight : REAL; // aktuelles Gewicht von der Waage in Gramm
+	fb_MqttPublisher : FB_MqttPublisher;
+	FB_System_FlaschenFullstand : FB_System_Flaschenfullstand;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -34,21 +34,7 @@ ELSE
 	fb_Ampelleuchte.eState := eBetriebszustand.Warning;
 END_IF
 
-// Rohwert der Waage in Gramm umrechnen — Kalibrierwerte anpassen!
-rWeight := FUN_Scale(
-    ix      := INT_TO_UINT(IFC_HW.iWaageMesswert),
-    ix_min  := 0,       // Rohwert der Waage bei 0 g
-    ix_max  := 1000,    // Rohwert der Waage bei bekanntem Referenzgewicht
-    ry_min  := 0.0,
-    ry_max  := 1000.0   // zugehöriges Referenzgewicht in Gramm
-);
 
-fbMqttPublisher(
-    bEnable      := IFC_HW.bEnable,
-    rWeight      := rWeight,
-    rTemperature := 25.0, // Platzhalter, bis Temperatur ausgewertet wird
-    rVibration   := 0.5   // Platzhalter, kein Sensor vorhanden
-);
 
 IF NOT IFC_HW.bEnable THEN
 	nState :=0;
@@ -101,8 +87,32 @@ CASE nState Of
 	END_IF
 END_CASE
 
+fb_MqttPublisher(
+    bEnableMqtt := IFC_HW.bEnable,
 
-fb_MQTT(data:= IFC_HW.bEnable);]]></ST>
+    iBandFullmenge1 := IFC_HW.iBandFullmenge1,
+
+    bEnable := IFC_HW.bEnable,
+    bExecute := IFC_HW.bExecute,
+
+    bEinzelSens1 := IFC_HW.bEinzelSens1,
+    bEinzelSens2 := IFC_HW.bEinzelSens2,
+    bEinzelSens3 := IFC_HW.bEinzelSens3,
+
+    bBandSens1 := IFC_HW.bBandSens1,
+    bBandSens2 := IFC_HW.bBandSens2,
+    bBandSens3 := IFC_HW.bBandSens3,
+    bBandSens4 := IFC_HW.bBandSens4,
+
+    rPcntFillLevel := fb_System_FlaschenFullstand.rPcntFillLevelOut,
+    iFillLevel1 := fb_System_FlaschenFullstand.iFillLevel1Out,
+    iFillLevel2 := fb_System_FlaschenFullstand.iFillLevel2Out,
+    iFillLevel3 := fb_System_FlaschenFullstand.iFillLevel3Out,
+
+    bConnected => ,
+    bError => ,
+    hrErrorCode =>
+);]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

@@ -9,6 +9,10 @@ VAR_INPUT
 	Reset : BOOL;
 END_VAR
 VAR_OUTPUT
+	rPcntFillLevelOut : REAL;
+    iFillLevel1Out : UINT;
+    iFillLevel2Out : UINT;
+    iFillLevel3Out : UINT;
 END_VAR
 VAR
 	rPcntFillLevel : REAL;
@@ -46,6 +50,11 @@ rFilling3Alt := rFilling3;
 IF rPcntFillLevel > 100 THEN
 	rPcntFillLevel := 100.0;
 END_IF
+
+rPcntFillLevelOut := rPcntFillLevel;
+iFillLevel1Out := iFillLevel1;
+iFillLevel2Out := iFillLevel2;
+iFillLevel3Out := iFillLevel3;
 
 ]]></ST>
     </Implementation>
